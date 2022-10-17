@@ -96,26 +96,22 @@ public class Ledger {
      * MODIFIES: this
      * EFFECTS: Contributes to a saving goal in goals list and reduce the balance by that amount
      */
-    public void addToSavingGoal(int index, double amount) {
+    public boolean addToSavingGoal(int index, double amount) {
         // If goal is complete
         if (this.goals.get(index).isComplete()) {
             System.out.println("This saving goal has already been completed. Cannot contribute!");
-            return;
+            return false;
         }
         // If amount is negative
         if (amount < 0) {
             System.out.println("Contribution to saving goal should be more than zero.");
-            return;
+            return false;
         }
-        // If amount is less than or equal to remaining savings goal
-        if (amount <= this.goals.get(index).getGoalAmount()) {
-            balance -= amount;
-            this.goals.get(index).addToCurrentAmount(amount);
-            if (this.goals.get(index).getGoalAmount() == this.goals.get(index).getCurrentAmount()) {
-                this.goals.get(index).setComplete(true);
-            }
-        } else {
-            System.out.println("Amount cannot be larger than the remaining savings goal.");
+        // If something else
+        if (!this.goals.get(index).addToCurrentAmount(amount)) {
+            System.out.println("Unable to contribute to savings.");
+            return false;
         }
+        return true;
     }
 }

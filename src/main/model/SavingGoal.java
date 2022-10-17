@@ -44,8 +44,20 @@ public class SavingGoal {
         this.goalAmount = goalAmount;
     }
 
-    public void addToCurrentAmount(double currentAmount) {
-        this.currentAmount += currentAmount;
+    public boolean addToCurrentAmount(double amount) {
+        // If goal is complete
+        if (complete || amount <= 0) {
+            return false;
+        }
+        // If amount is less than or equal to remaining savings goal
+        if (amount <= (goalAmount - currentAmount)) {
+            currentAmount += amount;
+            if (currentAmount == goalAmount) {
+                complete = true;
+            }
+            return true;
+        }
+        return false;
     }
 
     public void setComplete(boolean complete) {
