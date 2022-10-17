@@ -17,8 +17,6 @@ to make budgeting easier.
 ### User Stories:
 - As a user, I want to add my income sources and view my available money.
 - As a user, I want to see a breakdown of my spending's.
-- As a user, I want to customize by categories for my bills and expenses.
-- As a user, I want to set due dates for bills.
 - As a user, I want to make notes on some of my transactions.
 - As a user, I want to set up saving goals.
-- As a user, I want to remove old goals and change categories names.
+- As a user, I want to remove old goals.
