@@ -19,4 +19,3 @@ to make budgeting easier.
 - As a user, I want to see a breakdown of my spending's.
 - As a user, I want to make notes on some of my transactions.
 - As a user, I want to set up saving goals.
-- As a user, I want to remove old goals.
