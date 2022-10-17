@@ -77,6 +77,13 @@ public class LedgerTest {
     }
 
     @Test
+    public void testAddToSavingGoalWhenWhenAmountisNeg() {
+        ledger.setSavingGoal("Get a new car", 14800.99);
+        assertFalse(ledger.addToSavingGoal(0,-1000.00));
+    }
+
+
+    @Test
     public void testAddToSavingGoal() {
         ledger.setSavingGoal("Get a new car", 14800.99);
         assertTrue(ledger.addToSavingGoal(0,4400));
