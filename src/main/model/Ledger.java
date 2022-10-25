@@ -1,5 +1,8 @@
 package model;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -113,5 +116,35 @@ public class Ledger {
             return false;
         }
         return true;
+    }
+
+    public JSONObject toJson() {
+        JSONObject json = new JSONObject();
+        json.put("balance", balance);
+        json.put("data", listsToJson());
+        return json;
+    }
+
+    private JSONArray listsToJson() {
+        JSONArray jsonData = new JSONArray();
+        jsonData.put(incomesToJson());
+        jsonData.put(expensesToJson());
+        jsonData.put(goalsToJson());
+        return jsonData;
+    }
+
+    private JSONObject expensesToJson() {
+        JSONArray jsonArray = new JSONArray(expenses);
+        return new JSONObject().put("expenses", jsonArray);
+    }
+
+    private JSONObject incomesToJson() {
+        JSONArray jsonArray = new JSONArray(incomeList);
+        return new JSONObject().put("incomes", jsonArray);
+    }
+
+    private JSONObject goalsToJson() {
+        JSONArray jsonArray = new JSONArray(goals);
+        return new JSONObject().put("goals", jsonArray);
     }
 }

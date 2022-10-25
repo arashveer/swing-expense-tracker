@@ -1,0 +1,21 @@
+{
+         "balance": 3811.77,
+         "data": [
+           {
+             "expenses": [
+                  {
+                           "date": "15 oct",
+                           "note": "food",
+                           "amount": 99,
+                           "title": "uber"
+                  },
+                  {
+                           "date": "10 oct",
+                           "note": "phone bill",
+                           "amount": 89.23,
+                           "title": "rodgers"
+                  }
+             ]
+           }
+         ]
+}

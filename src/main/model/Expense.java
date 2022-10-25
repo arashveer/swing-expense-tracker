@@ -1,5 +1,7 @@
 package model;
 
+import org.json.JSONObject;
+
 // Represents an expense with a title, amount, date, and note.
 public class Expense {
     private String title;
@@ -7,6 +9,8 @@ public class Expense {
     private String date;
     private String note;
 
+    // REQUIRES: amount > 0
+    // MODIFIES: this
     // EFFECTS: Constructs an expense object with associated title, amount, date, and a note.
     public Expense(String title, double amount, String date, String note) {
         this.title = title;
@@ -49,5 +53,14 @@ public class Expense {
 
     public void setNote(String note) {
         this.note = note;
+    }
+
+    public JSONObject toJson() {
+        JSONObject object = new JSONObject();
+        object.put("title", title);
+        object.put("amount", amount);
+        object.put("date", date);
+        object.put("note", note);
+        return object;
     }
 }

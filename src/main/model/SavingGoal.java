@@ -2,7 +2,7 @@ package model;
 
 // Represents a saving goal with a name, goalAmount, currentAmount and status(complete or incomplete)
 public class SavingGoal {
-    private double goalAmount; //
+    private double goalAmount;
     private double currentAmount;
     private String name;
 
@@ -44,6 +44,7 @@ public class SavingGoal {
         this.goalAmount = goalAmount;
     }
 
+    // REQUIRES: amount > 0
     public boolean addToCurrentAmount(double amount) {
         // If goal is complete
         if (complete || amount <= 0) {
