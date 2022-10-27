@@ -16,6 +16,14 @@ public class SavingGoal {
         complete = false;
     }
 
+    // EFFECTS: used when parsing data from json and creating a new goal
+    public SavingGoal(String name, double goalAmount, double currentAmount, boolean complete) {
+        this.name = name;
+        this.goalAmount = goalAmount;
+        this.currentAmount = currentAmount;
+        this.complete = complete;
+    }
+
     // GETTERS
 
     public String getName() {

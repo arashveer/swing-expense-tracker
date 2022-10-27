@@ -54,13 +54,4 @@ public class Expense {
     public void setNote(String note) {
         this.note = note;
     }
-
-    public JSONObject toJson() {
-        JSONObject object = new JSONObject();
-        object.put("title", title);
-        object.put("amount", amount);
-        object.put("date", date);
-        object.put("note", note);
-        return object;
-    }
 }

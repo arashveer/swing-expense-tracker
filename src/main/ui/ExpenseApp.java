@@ -1,9 +1,11 @@
 package ui;
 
 import model.Ledger;
+import persistence.JsonReader;
 import persistence.JsonWriter;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Scanner;
 
 // Expense tracker application
@@ -13,6 +15,7 @@ public class ExpenseApp {
     Ledger ledger;
     private Scanner input;
     private JsonWriter jsonWriter;
+    private JsonReader jsonReader;
     private static final String JSON_STORE = "./data/sample.json";
 
     // EFFECTS:  runs the tracker application
@@ -50,6 +53,7 @@ public class ExpenseApp {
         input = new Scanner(System.in);
         input.useDelimiter("\n");
         jsonWriter = new JsonWriter(JSON_STORE);
+        jsonReader = new JsonReader(JSON_STORE);
     }
 
     private void processCommand(String command) {
@@ -65,6 +69,9 @@ public class ExpenseApp {
                 break;
             case "save":
                 saveLedger();
+                break;
+            case "load":
+                loadLedger();
                 break;
             default:
                 System.out.println("Selection not valid...");
@@ -100,13 +107,17 @@ public class ExpenseApp {
 
     private void addToSavingGoal() {
         System.out.println("\nChoose a saving goal: ");
-        for (int i = 1; i <= ledger.getGoals().size(); i++) {
+        for (int i = 0; i < (ledger.getGoals()).size(); i++) {
             System.out.println(i + ": " + ledger.getSavingGoal(i).getName());
         }
         int goal = input.nextInt();
+        if (goal > ledger.getGoals().size()) {
+            System.out.println("Wrong input. Please enter index of a goal from the list: ");
+            goal = input.nextInt();
+        }
         System.out.print("\nHow much you want to contribute to the saving goal: $");
         double value = input.nextDouble();
-        ledger.addToSavingGoal((goal - 1), value);
+        ledger.addToSavingGoal(goal, value);
     }
 
     private void addSavingGoal() {
@@ -160,6 +171,7 @@ public class ExpenseApp {
         System.out.println("\tshow -> Show your summary");
         System.out.println("\texpenses -> Show list of all your expenses");
         System.out.println("\tsave -> Save your data");
+        System.out.println("\tload -> Load your data");
         System.out.println("\tq -> quit");
     }
 
@@ -224,5 +236,12 @@ public class ExpenseApp {
         } catch (FileNotFoundException e) {
             System.out.println("Unable to write to file: " + JSON_STORE);
         }
+    }
+
+    // MODIFIES: this
+    // EFFECTS: loads ledger from file
+    private void loadLedger() {
+        ledger = jsonReader.read();
+        System.out.println("Loaded ledger with balance of $" + ledger.getBalance() + " from " + JSON_STORE);
     }
 }

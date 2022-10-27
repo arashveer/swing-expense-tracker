@@ -57,6 +57,24 @@ public class Ledger {
         goals.add(new SavingGoal(title,goalAmount));
     }
 
+    /*
+     * REQUIRES: amount >= 0
+     * MODIFIES: this
+     * EFFECTS: Set a saving goal and add it to goals list
+     */
+    public void setOldSavingGoal(String title, double goalAmount, double currentAmount, boolean complete) {
+        goals.add(new SavingGoal(title,goalAmount,currentAmount,complete));
+    }
+
+    /*
+     * REQUIRES: balance >=0
+     * MODIFIES: this
+     * EFFECTS: Set the balance to given value
+     */
+    public void setBalance(double balance) {
+        this.balance = balance;
+    }
+
     // GETTERS
 
     // EFFECT: returns an expense object at index in list expenses
