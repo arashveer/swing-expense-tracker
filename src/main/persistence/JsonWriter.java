@@ -7,16 +7,19 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 
-import static java.awt.Event.TAB;
-
+// Represents a writer that writes JSON representation of ledger to a file
 public class JsonWriter {
     private PrintWriter writer;
     private String location;
+    private static final int TAB = 4; // spacing
 
     public JsonWriter(String location) {
         this.location = location;
     }
 
+    // MODIFIES: this
+    // EFFECTS: opens writer; throws FileNotFoundException if destination file cannot
+    // be opened for writing
     public void open() throws FileNotFoundException {
         writer = new PrintWriter(new File(location));
     }

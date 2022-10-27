@@ -4,8 +4,6 @@ import model.Ledger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -22,29 +20,29 @@ public class JsonReader {
     }
 
     // EFFECTS: reads workroom from file and returns it;
-    public Ledger read() {
+    public Ledger read() throws IOException {
         String jsonData = readFile(source);
         JSONObject jsonObject = new JSONObject(jsonData);
         return parseLedger(jsonObject);
     }
 
     // EFFECTS: reads source file as string and returns it
-    public String readFile(String source) {
+    public String readFile(String source) throws IOException {
         StringBuilder builder = new StringBuilder();
 
         try (Stream<String> stream = Files.lines(Paths.get(source), StandardCharsets.UTF_8)) {
             stream.forEach(s -> builder.append(s));
-        } catch (IOException e) {
-            e.printStackTrace();
         }
+
         return builder.toString();
     }
 
-    // EFFECTS: parses balance to create a ledger
+    /*
+     * EFFECTS: parses balance to create a ledger
+     *      do not need to parse balance from json, addItem calls in parseData increments the balance
+     */
     private Ledger parseLedger(JSONObject jsonObject) {
         Ledger ledger = new Ledger();
-        double balance = jsonObject.getDouble("balance");
-        ledger.setBalance(balance);
         parseData(ledger, jsonObject);
         return ledger;
     }

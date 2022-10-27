@@ -5,7 +5,6 @@ public class SavingGoal {
     private double goalAmount;
     private double currentAmount;
     private String name;
-
     private boolean complete;
 
     // EFFECTS: creates a saving goal with its name, goal, being incomplete and current contribution being zero
@@ -52,7 +51,15 @@ public class SavingGoal {
         this.goalAmount = goalAmount;
     }
 
-    // REQUIRES: amount > 0
+    public void setComplete(boolean complete) {
+        this.complete = complete;
+    }
+
+    /* MODIFIES: this
+     * EFFECTS: sets the current amount of this goal to provided value and returns true.
+     *          returns false, if goal is complete, amount is negative or contribution is more than amount left.
+     *          sets the complete boolean true if current amount reaches the goal amount.
+     */
     public boolean addToCurrentAmount(double amount) {
         // If goal is complete
         if (complete || amount <= 0) {
@@ -67,9 +74,5 @@ public class SavingGoal {
             return true;
         }
         return false;
-    }
-
-    public void setComplete(boolean complete) {
-        this.complete = complete;
     }
 }

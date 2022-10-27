@@ -11,18 +11,20 @@ import java.util.Scanner;
 // Expense tracker application
 public class ExpenseApp {
 
-    // Create a ledger
+    // Initialize
     Ledger ledger;
     private Scanner input;
     private JsonWriter jsonWriter;
     private JsonReader jsonReader;
-    private static final String JSON_STORE = "./data/sample.json";
+    private static final String JSON_STORE = "./data/data.json";
 
     // EFFECTS:  runs the tracker application
     public ExpenseApp() {
         runApp();
     }
 
+    // MODIFIES: this
+    // EFFECTS: processes user input and responsible for termination of app
     private void runApp() {
         boolean keepGoing = true;
         String command = null;
@@ -47,7 +49,7 @@ public class ExpenseApp {
     }
 
     // MODIFIES: this
-    // EFFECTS: initializes ledger
+    // EFFECTS: creates the ledger, input scanner, and JSON reader and writer
     private void init() {
         ledger = new Ledger();
         input = new Scanner(System.in);
@@ -56,6 +58,7 @@ public class ExpenseApp {
         jsonReader = new JsonReader(JSON_STORE);
     }
 
+    // EFFECTS: processes user input
     private void processCommand(String command) {
         switch (command) {
             case "add":
@@ -79,6 +82,19 @@ public class ExpenseApp {
         }
     }
 
+    // EFFECTS: displays menu of options to user
+    private void displayMenu() {
+        System.out.println("\nYour current balance is $" + ledger.getBalance());
+        System.out.println("\nSelect from:");
+        System.out.println("\tadd -> Add (income, expense, or saving goal)");
+        System.out.println("\tshow -> Show your summary");
+        System.out.println("\texpenses -> Show list of all your expenses");
+        System.out.println("\tsave -> Save your data");
+        System.out.println("\tload -> Load your data");
+        System.out.println("\tq -> quit");
+    }
+
+    // EFFECTS: displays menu for adding or modifying our objects
     private  void processAdd() {
         System.out.println("Select from:");
         System.out.println("\tincome -> add an income");
@@ -105,21 +121,8 @@ public class ExpenseApp {
         }
     }
 
-    private void addToSavingGoal() {
-        System.out.println("\nChoose a saving goal: ");
-        for (int i = 0; i < (ledger.getGoals()).size(); i++) {
-            System.out.println(i + ": " + ledger.getSavingGoal(i).getName());
-        }
-        int goal = input.nextInt();
-        if (goal > ledger.getGoals().size()) {
-            System.out.println("Wrong input. Please enter index of a goal from the list: ");
-            goal = input.nextInt();
-        }
-        System.out.print("\nHow much you want to contribute to the saving goal: $");
-        double value = input.nextDouble();
-        ledger.addToSavingGoal(goal, value);
-    }
-
+    // MODIFIES: this
+    // EFFECTS: prompt user to add a saving goal to their ledger
     private void addSavingGoal() {
         System.out.print("\nInformation required to add a saving goal: \nName: ");
         String goalName = input.next();
@@ -128,6 +131,8 @@ public class ExpenseApp {
         ledger.setSavingGoal(goalName, goalAmount);
     }
 
+    // MODIFIES: this
+    // EFFECTS: prompt user to add an income to their ledger
     private void addAnIncome() {
         System.out.print("\nInformation required to add an income: \nSource: ");
         String incomeSource = input.next();
@@ -136,6 +141,7 @@ public class ExpenseApp {
         ledger.addIncome(incomeAmount,incomeSource);
     }
 
+    // EFFECTS: prompt user to ask if they want to add income first
     private void addAnExpenseWithoutIncome() {
         if (ledger.getBalance() <= 0) {
             System.out.println("\nYou have not added an income yet, balance is $0.");
@@ -152,6 +158,8 @@ public class ExpenseApp {
         }
     }
 
+    // MODIFIES: this
+    // EFFECTS: prompt user to add an expense to their ledger
     private void addAnExpense() {
         System.out.print("\nInformation required to add an expense: \nSource: ");
         String expenseSource = input.next();
@@ -164,18 +172,26 @@ public class ExpenseApp {
         ledger.addExpense(expenseSource, expenseAmount, expenseDate, expenseNote);
     }
 
-    private void displayMenu() {
-        System.out.println("\nYour current balance is $" + ledger.getBalance());
-        System.out.println("\nSelect from:");
-        System.out.println("\tadd -> Add (income, expense, or saving goal)");
-        System.out.println("\tshow -> Show your summary");
-        System.out.println("\texpenses -> Show list of all your expenses");
-        System.out.println("\tsave -> Save your data");
-        System.out.println("\tload -> Load your data");
-        System.out.println("\tq -> quit");
+    // MODIFIES: this
+    // EFFECTS: prompt user for goal and contribution(value) of saving goal to add
+    private void addToSavingGoal() {
+        System.out.println("\nChoose a saving goal: ");
+        for (int i = 0; i < (ledger.getGoals()).size(); i++) {
+            System.out.println(i + ": " + ledger.getSavingGoal(i).getName());
+        }
+        int goal = input.nextInt();
+        if (goal > ledger.getGoals().size()) {
+            System.out.println("Wrong input. Please enter index of a goal from the list: ");
+            goal = input.nextInt();
+        }
+        System.out.print("\nHow much you want to contribute to the saving goal: $");
+        double value = input.nextDouble();
+        ledger.addToSavingGoal(goal, value);
     }
 
-    // EFFECTS: Prints one expense with all its info
+    // ----- Methods to display info to user -----
+
+    // EFFECTS: prints an expense object
     private String showAnExpense(Ledger ledger, int index) {
         return (ledger.getExpense(index).getTitle() + ": " + ledger.getExpense(index).getNote()
                 + "\nAmount: $" + ledger.getExpense(index).getAmount()
@@ -183,17 +199,18 @@ public class ExpenseApp {
                 + "\n");
     }
 
-    // EFFECTS: Prints an income
+    // EFFECTS: prints an income object
     private String showAnIncome(Ledger ledger, int index) {
         return (ledger.getIncome(index).getSource() + ": $" + ledger.getIncome(index).getAmount() + "\n");
     }
 
-    // EFFECTS: Prints a saving goal
+    // EFFECTS: prints a saving goal object
     private String showAGoal(Ledger ledger, int index) {
         return (ledger.getSavingGoal(index).getName() + ": $" + ledger.getSavingGoal(index).getCurrentAmount()
                 + " out of $" + ledger.getSavingGoal(index).getGoalAmount());
     }
 
+    // EFFECTS: prints out a list of all the expenses
     private void showExpenses() {
         if (ledger.getExpenses().size() == 0) {
             System.out.println("You have not added any expenses yet.");
@@ -204,6 +221,7 @@ public class ExpenseApp {
         }
     }
 
+    // EFFECTS: prints a summary of this ledger
     private void showSummary() {
         double totalIncome = 0;
         for (int i = 0; i < ledger.getIncomeList().size(); i++) {
@@ -226,6 +244,8 @@ public class ExpenseApp {
         }
     }
 
+    // ----- Methods to save and load data -----
+
     // EFFECTS: saves the ledger to file
     private void saveLedger() {
         try {
@@ -241,7 +261,11 @@ public class ExpenseApp {
     // MODIFIES: this
     // EFFECTS: loads ledger from file
     private void loadLedger() {
-        ledger = jsonReader.read();
-        System.out.println("Loaded ledger with balance of $" + ledger.getBalance() + " from " + JSON_STORE);
+        try {
+            ledger = jsonReader.read();
+            System.out.println("Loaded ledger with balance of $" + ledger.getBalance() + " from " + JSON_STORE);
+        } catch (IOException e) {
+            System.out.println("Unable to read from file: " + JSON_STORE);
+        }
     }
 }

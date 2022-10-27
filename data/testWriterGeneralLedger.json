@@ -1,0 +1,21 @@
+{
+    "balance": 28922.78,
+    "data": [
+        {"incomes": [{
+            "amount": 28990.12,
+            "source": "ABC Corp."
+        }]},
+        {"expenses": [{
+            "date": "Oct 27",
+            "note": "Food Delivery",
+            "amount": 67.34,
+            "title": "Uber Eats"
+        }]},
+        {"goals": [{
+            "goalAmount": 12500,
+            "name": "Buy a new car",
+            "currentAmount": 3300,
+            "complete": false
+        }]}
+    ]
+}

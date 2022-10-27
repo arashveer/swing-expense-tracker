@@ -136,6 +136,9 @@ public class Ledger {
         return true;
     }
 
+    // JSON Writer functions
+
+    // EFFECTS: returns json object consisting of this ledger's data
     public JSONObject toJson() {
         JSONObject json = new JSONObject();
         json.put("balance", balance);
@@ -143,6 +146,7 @@ public class Ledger {
         return json;
     }
 
+    // EFFECTS: returns JSON array comprising all three 3 types of our lists
     private JSONArray listsToJson() {
         JSONArray jsonData = new JSONArray();
         jsonData.put(incomesToJson());
@@ -151,16 +155,19 @@ public class Ledger {
         return jsonData;
     }
 
+    // EFFECTS: returns expenses in this ledger as a JSON array
     private JSONObject expensesToJson() {
         JSONArray jsonArray = new JSONArray(expenses);
         return new JSONObject().put("expenses", jsonArray);
     }
 
+    // EFFECTS: returns incomes in this ledger as a JSON array
     private JSONObject incomesToJson() {
         JSONArray jsonArray = new JSONArray(incomeList);
         return new JSONObject().put("incomes", jsonArray);
     }
 
+    // EFFECTS: returns saving goals in this ledger as a JSON array
     private JSONObject goalsToJson() {
         JSONArray jsonArray = new JSONArray(goals);
         return new JSONObject().put("goals", jsonArray);

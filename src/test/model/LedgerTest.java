@@ -1,5 +1,7 @@
 package model;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -60,6 +62,9 @@ public class LedgerTest {
 
         ledger.addExpense("Rodgers Mobile", 75.20, "Sept 29", "Mobile Bill");
         assertEquals(4393.50, ledger.getBalance());
+
+        ledger.setBalance(3000);
+        assertEquals(3000, ledger.getBalance());
     }
 
     @Test
@@ -91,5 +96,47 @@ public class LedgerTest {
                 ledger.getSavingGoal(0).getGoalAmount()-ledger.getSavingGoal(0).getCurrentAmount());
     }
 
+    @Test
+    public void testAddWholeSavingGoal() {
+        ledger.setOldSavingGoal("Get a new car", 15000,2500, false);
+        assertEquals("Get a new car", ledger.getGoals().get(0).getName());
+        assertFalse(ledger.getGoals().get(0).isComplete());
+        assertTrue(ledger.addToSavingGoal(0,4500));
+        assertEquals(8000,
+                ledger.getSavingGoal(0).getGoalAmount()-ledger.getSavingGoal(0).getCurrentAmount());
+    }
 
+    @Test
+    public void testConvertingToJson() {
+        ledger.addIncome(4500.00,"Company XYZ");
+        ledger.addExpense("Rodgers Mobile", 100.00, "Sept 29", "Mobile Bill");
+        ledger.setSavingGoal("Get a new car", 15000.00);
+        ledger.addToSavingGoal(0,2500.00);
+        JSONObject json = ledger.toJson();
+        assertEquals(4400.00, json.getDouble("balance"));
+
+        JSONArray data = json.getJSONArray("data");
+
+        JSONObject incomesData = (JSONObject) data.get(0);
+        JSONArray incomes = incomesData.getJSONArray("incomes");
+        JSONObject income = incomes.getJSONObject(0);
+        assertEquals("Company XYZ", income.getString("source"));
+        assertEquals(4500.00, income.getDouble("amount"));
+
+        JSONObject expensesData = (JSONObject) data.get(1);
+        JSONArray expenses = expensesData.getJSONArray("expenses");
+        JSONObject expense = expenses.getJSONObject(0);
+        assertEquals("Rodgers Mobile", expense.getString("title"));
+        assertEquals(100.00, expense.getDouble("amount"));
+        assertEquals("Sept 29", expense.getString("date"));
+        assertEquals("Mobile Bill", expense.getString("note"));
+
+        JSONObject goalsData = (JSONObject) data.get(2);
+        JSONArray goals = goalsData.getJSONArray("goals");
+        JSONObject goal = goals.getJSONObject(0);
+        assertEquals("Get a new car", goal.getString("name"));
+        assertEquals(15000.00, goal.getDouble("goalAmount"));
+        assertEquals(2500.00, goal.getDouble("currentAmount"));
+        assertFalse(goal.getBoolean("complete"));
+    }
 }

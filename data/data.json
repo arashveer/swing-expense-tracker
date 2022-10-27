@@ -1,10 +1,10 @@
 {
-  "balance": 19654.14,
+  "balance": 900,
   "data": [
     {
       "incomes": [
         {
-          "amount": 19832.12,
+          "amount": 1050,
           "source": "Google Inc."
         }
       ]
@@ -14,13 +14,13 @@
         {
           "date": "22 Oct",
           "note": "Food Delivery",
-          "amount": 55.98,
+          "amount": 50,
           "title": "Uber Eats"
         },
         {
           "date": "20 Oct",
           "note": "Phone Bill",
-          "amount": 122,
+          "amount": 100,
           "title": "Bell Mobile"
         }
       ]

@@ -1,7 +1,5 @@
 package model;
 
-import org.json.JSONObject;
-
 // Represents an expense with a title, amount, date, and note.
 public class Expense {
     private String title;

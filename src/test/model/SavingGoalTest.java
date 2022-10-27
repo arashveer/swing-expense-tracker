@@ -23,6 +23,15 @@ public class SavingGoalTest {
     }
 
     @Test
+    public void testSecondConstructor() {
+        SavingGoal newGoal = new SavingGoal("Buy a new car", 14480.00,14480.00, true);
+        assertEquals("Buy a new car", newGoal.getName());
+        assertEquals(14480.00, newGoal.getGoalAmount());
+        assertEquals(14480.00, newGoal.getCurrentAmount());
+        assertTrue(newGoal.isComplete());
+    }
+
+    @Test
     public void testChangeAll() {
         goal.setName("Buy new laptop");
         goal.setGoalAmount(1800.50);
