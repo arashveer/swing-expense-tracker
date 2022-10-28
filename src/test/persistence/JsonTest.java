@@ -4,6 +4,9 @@ import model.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+// This persistence test package is modeled on persistence tests from :
+// https://github.students.cs.ubc.ca/CPSC210/JsonSerializationDemo
+
 public class JsonTest {
 
     protected void checkExpense(String title, double amount, String date, String note, Expense expense) {

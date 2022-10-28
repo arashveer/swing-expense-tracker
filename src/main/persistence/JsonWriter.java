@@ -7,6 +7,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 
+// This class is modeled on JsonWriter class from :
+// https://github.students.cs.ubc.ca/CPSC210/JsonSerializationDemo
+
 // Represents a writer that writes JSON representation of ledger to a file
 public class JsonWriter {
     private PrintWriter writer;

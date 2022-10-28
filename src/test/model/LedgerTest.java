@@ -94,11 +94,13 @@ public class LedgerTest {
         assertTrue(ledger.addToSavingGoal(0,4400));
         assertEquals(10400.99,
                 ledger.getSavingGoal(0).getGoalAmount()-ledger.getSavingGoal(0).getCurrentAmount());
+        assertEquals(-4400, ledger.getBalance());
     }
 
     @Test
     public void testAddWholeSavingGoal() {
         ledger.setOldSavingGoal("Get a new car", 15000,2500, false);
+        assertEquals(-2500, ledger.getBalance());
         assertEquals("Get a new car", ledger.getGoals().get(0).getName());
         assertFalse(ledger.getGoals().get(0).isComplete());
         assertTrue(ledger.addToSavingGoal(0,4500));
@@ -113,7 +115,7 @@ public class LedgerTest {
         ledger.setSavingGoal("Get a new car", 15000.00);
         ledger.addToSavingGoal(0,2500.00);
         JSONObject json = ledger.toJson();
-        assertEquals(4400.00, json.getDouble("balance"));
+        assertEquals(1900.00, json.getDouble("balance"));
 
         JSONArray data = json.getJSONArray("data");
 

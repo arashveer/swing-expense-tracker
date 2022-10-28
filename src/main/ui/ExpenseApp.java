@@ -6,6 +6,7 @@ import persistence.JsonWriter;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.Scanner;
 
 // Expense tracker application
@@ -16,6 +17,8 @@ public class ExpenseApp {
     private Scanner input;
     private JsonWriter jsonWriter;
     private JsonReader jsonReader;
+
+    DecimalFormat dec = new DecimalFormat("#0.00");
     private static final String JSON_STORE = "./data/data.json";
 
     // EFFECTS:  runs the tracker application
@@ -31,7 +34,13 @@ public class ExpenseApp {
 
         init();
 
-        System.out.println("Welcome to this expense tracker app!");
+        System.out.println("Welcome to this expense tracker app!\n");
+        System.out.println("Do you want to load your old data? (y to load)");
+        command = input.next();
+        command = command.toLowerCase();
+        if (command.equals("y")) {
+            loadLedger();
+        }
 
         while (keepGoing) {
             displayMenu();
@@ -84,7 +93,7 @@ public class ExpenseApp {
 
     // EFFECTS: displays menu of options to user
     private void displayMenu() {
-        System.out.println("\nYour current balance is $" + ledger.getBalance());
+        System.out.println("\nYour current balance is $" + dec.format(ledger.getBalance()));
         System.out.println("\nSelect from:");
         System.out.println("\tadd -> Add (income, expense, or saving goal)");
         System.out.println("\tshow -> Show your summary");
@@ -194,20 +203,21 @@ public class ExpenseApp {
     // EFFECTS: prints an expense object
     private String showAnExpense(Ledger ledger, int index) {
         return (ledger.getExpense(index).getTitle() + ": " + ledger.getExpense(index).getNote()
-                + "\nAmount: $" + ledger.getExpense(index).getAmount()
+                + "\nAmount: $" + dec.format(ledger.getExpense(index).getAmount())
                 + "\nDate: " + ledger.getExpense(index).getDate()
                 + "\n");
     }
 
     // EFFECTS: prints an income object
     private String showAnIncome(Ledger ledger, int index) {
-        return (ledger.getIncome(index).getSource() + ": $" + ledger.getIncome(index).getAmount() + "\n");
+        return (ledger.getIncome(index).getSource() + ": $" + dec.format(ledger.getIncome(index).getAmount()) + "\n");
     }
 
     // EFFECTS: prints a saving goal object
     private String showAGoal(Ledger ledger, int index) {
-        return (ledger.getSavingGoal(index).getName() + ": $" + ledger.getSavingGoal(index).getCurrentAmount()
-                + " out of $" + ledger.getSavingGoal(index).getGoalAmount());
+        return (ledger.getSavingGoal(index).getName() + ": $"
+                + dec.format(ledger.getSavingGoal(index).getCurrentAmount())
+                + " out of $" + dec.format(ledger.getSavingGoal(index).getGoalAmount()));
     }
 
     // EFFECTS: prints out a list of all the expenses
@@ -232,8 +242,8 @@ public class ExpenseApp {
             totalExpense += ledger.getExpense(i).getAmount();
         }
         System.out.println("\n------ SUMMARY ------");
-        System.out.println("\nTotal Income: $" + totalIncome);
-        System.out.println("\nTotal expenditure : $" + totalExpense);
+        System.out.println("\nTotal Income: $" + dec.format(totalIncome));
+        System.out.println("\nTotal expenditure : $" + dec.format(totalExpense));
         System.out.println("\nSaving Goal: ");
         if (ledger.getGoals().size() == 0) {
             System.out.println("NULL");
@@ -263,7 +273,8 @@ public class ExpenseApp {
     private void loadLedger() {
         try {
             ledger = jsonReader.read();
-            System.out.println("Loaded ledger with balance of $" + ledger.getBalance() + " from " + JSON_STORE);
+            System.out.println("Loaded ledger with balance of $" + dec.format(ledger.getBalance())
+                    + " from " + JSON_STORE);
         } catch (IOException e) {
             System.out.println("Unable to read from file: " + JSON_STORE);
         }

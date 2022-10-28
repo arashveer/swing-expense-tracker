@@ -19,5 +19,6 @@ to make budgeting easier.
 - As a user, I want to see a breakdown of my spending's.
 - As a user, I want to make notes on some of my transactions.
 - As a user, I want to set up saving goals.
-- As a user, I want to be able to save my data to file
-- As a user, I want to be able to be able to load my data from file 
+- As a user, I want to save my ledger data to a file.
+- As a user, I want to load my ledger data from a file. 
+- As a user, when I start the app, I want to be given the option to load my data.

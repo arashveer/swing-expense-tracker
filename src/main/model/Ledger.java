@@ -64,6 +64,7 @@ public class Ledger {
      */
     public void setOldSavingGoal(String title, double goalAmount, double currentAmount, boolean complete) {
         goals.add(new SavingGoal(title,goalAmount,currentAmount,complete));
+        balance -= currentAmount;
     }
 
     /*
@@ -133,6 +134,7 @@ public class Ledger {
             System.out.println("Unable to contribute to savings.");
             return false;
         }
+        balance -= amount;
         return true;
     }
 

@@ -1,39 +1,49 @@
 {
-  "balance": 900,
-  "data": [
-    {
-      "incomes": [
-        {
-          "amount": 1050,
-          "source": "Google Inc."
-        }
-      ]
-    },
-    {
-      "expenses": [
-        {
-          "date": "22 Oct",
-          "note": "Food Delivery",
-          "amount": 50,
-          "title": "Uber Eats"
-        },
-        {
-          "date": "20 Oct",
-          "note": "Phone Bill",
-          "amount": 100,
-          "title": "Bell Mobile"
-        }
-      ]
-    },
-    {
-      "goals": [
-        {
-          "goalAmount": 15000,
-          "name": "Buy a new car",
-          "currentAmount": 3000,
-          "complete": false
-        }
-      ]
-    }
-  ]
+    "balance": 809.76,
+    "data": [
+        {"incomes": [
+            {
+                "amount": 1050,
+                "source": "Google Inc."
+            },
+            {
+                "amount": 4233.99,
+                "source": "Bestbuy Ca"
+            }
+        ]},
+        {"expenses": [
+            {
+                "date": "22 Oct",
+                "note": "Food Delivery",
+                "amount": 50,
+                "title": "Uber Eats"
+            },
+            {
+                "date": "20 Oct",
+                "note": "Phone Bill",
+                "amount": 100,
+                "title": "Bell Mobile"
+            },
+            {
+                "date": "Oct 22",
+                "note": "Grocery Bill",
+                "amount": 124.23,
+                "title": "Save on Food"
+            }
+        ]},
+        {"goals": [
+            {
+                "goalAmount": 15000,
+                "name": "Buy a new car",
+                "currentAmount": 3000,
+                "complete": false
+            },
+            {
+                "goalAmount": 1200,
+                "name": "Save for a desktop",
+                "currentAmount": 1200,
+                "complete": true
+            }
+        ]}
+    ]
 }
