@@ -22,3 +22,4 @@ to make budgeting easier.
 - As a user, I want to save my ledger data to a file.
 - As a user, I want to load my ledger data from a file. 
 - As a user, when I start the app, I want to be given the option to load my data.
+- As a user, when I close the app, I want to be given the option to save my data.

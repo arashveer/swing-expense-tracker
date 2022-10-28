@@ -34,24 +34,26 @@ public class ExpenseApp {
 
         init();
 
-        System.out.println("Welcome to this expense tracker app!\n");
-        System.out.println("Do you want to load your old data? (y to load)");
-        command = input.next();
-        command = command.toLowerCase();
+        System.out.println("Welcome to this expense tracker app!\nDo you want to load your old data? (y to load)");
+        command = input.next().toLowerCase();
         if (command.equals("y")) {
             loadLedger();
         }
 
         while (keepGoing) {
             displayMenu();
-            command = input.next();
-            command = command.toLowerCase();
-
+            command = input.next().toLowerCase();
             if (command.equals("q")) {
                 keepGoing = false;
             } else {
                 processCommand(command);
             }
+        }
+
+        System.out.println("Do you want to save before quitting the app? Type y for yes.");
+        command = input.next().toLowerCase();
+        if (command.equals("y")) {
+            saveLedger();
         }
 
         System.out.println("\nGoodbye!");

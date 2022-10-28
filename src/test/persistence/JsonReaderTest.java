@@ -5,7 +5,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -47,7 +46,7 @@ public class JsonReaderTest extends JsonTest {
     void testReaderGeneralLedger() {
         JsonReader reader = new JsonReader("./data/testGeneralLedger.json");
         try {
-            ledger = reader.read();assertEquals(28922.78, ledger.getBalance());
+            ledger = reader.read();assertEquals(25622.78, ledger.getBalance());
             checkExpense("Uber Eats", 67.34, "Oct 27", "Food Delivery", ledger.getExpense(0));
             checkIncome("ABC Corp.", 28990.12, ledger.getIncome(0));
             checkGoal("Buy a new car", 12500, 3300, false, ledger.getSavingGoal(0));

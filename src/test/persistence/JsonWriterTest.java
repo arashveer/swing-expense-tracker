@@ -61,7 +61,7 @@ public class JsonWriterTest extends JsonTest {
 
             JsonReader reader = new JsonReader("./data/testWriterGeneralLedger.json");
             ledger = reader.read();
-            assertEquals(28922.78, ledger.getBalance());
+            assertEquals(25622.78, ledger.getBalance());
             checkExpense("Uber Eats", 67.34, "Oct 27", "Food Delivery", ledger.getExpense(0));
             checkIncome("ABC Corp.", 28990.12, ledger.getIncome(0));
             checkGoal("Buy a new car", 12500, 3300, false, ledger.getSavingGoal(0));
