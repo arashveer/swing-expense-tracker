@@ -1,5 +1,5 @@
 {
-    "balance": 809.7600000000002,
+    "balance": 20579.539999999997,
     "data": [
         {"incomes": [
             {
@@ -8,7 +8,11 @@
             },
             {
                 "amount": 4233.99,
-                "source": "Bestbuy Ca"
+                "source": "BestBuy Ca"
+            },
+            {
+                "amount": 20000,
+                "source": "ubc"
             }
         ]},
         {"expenses": [
@@ -29,6 +33,12 @@
                 "note": "Grocery Bill",
                 "amount": 124.23,
                 "title": "Save on Food"
+            },
+            {
+                "date": "28 Oct",
+                "note": "School",
+                "amount": 230.22,
+                "title": "ubc"
             }
         ]},
         {"goals": [
