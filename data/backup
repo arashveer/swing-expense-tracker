@@ -1,5 +1,5 @@
 {
-    "balance": 62719.53999999999,
+    "balance": 20579.54,
     "data": [
         {"incomes": [
             {
@@ -13,10 +13,6 @@
             {
                 "amount": 20000,
                 "source": "ubc"
-            },
-            {
-                "amount": 100000,
-                "source": "Income"
             }
         ]},
         {"expenses": [
@@ -33,7 +29,7 @@
                 "title": "Bell Mobile"
             },
             {
-                "date": "22 Oct",
+                "date": "Oct 22",
                 "note": "Grocery Bill",
                 "amount": 124.23,
                 "title": "Save on Food"
@@ -43,19 +39,13 @@
                 "note": "School",
                 "amount": 230.22,
                 "title": "ubc"
-            },
-            {
-                "date": "23 Nov",
-                "note": "Note",
-                "amount": 55000,
-                "title": "Property"
             }
         ]},
         {"goals": [
             {
                 "goalAmount": 15000,
                 "name": "Buy a new car",
-                "currentAmount": 5860,
+                "currentAmount": 3000,
                 "complete": false
             },
             {

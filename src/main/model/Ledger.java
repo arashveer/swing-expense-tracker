@@ -113,6 +113,24 @@ public class Ledger {
         return balance;
     }
 
+    // EFFECTS: returns total of incomes as a double
+    public double totalIncome() {
+        double totalIncome = 0;
+        for (int i = 0; i < getIncomeList().size(); i++) {
+            totalIncome += getIncome(i).getAmount();
+        }
+        return totalIncome;
+    }
+
+    // EFFECTS: returns total of expenses as a double
+    public double totalExpenses() {
+        double totalExpense = 0;
+        for (int i = 0; i < getExpenses().size(); i++) {
+            totalExpense += getExpense(i).getAmount();
+        }
+        return totalExpense;
+    }
+
     /*
      * REQUIRES: amount >= 0
      * MODIFIES: this

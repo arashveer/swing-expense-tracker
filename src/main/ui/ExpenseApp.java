@@ -235,17 +235,9 @@ public class ExpenseApp {
 
     // EFFECTS: prints a summary of this ledger
     private void showSummary() {
-        double totalIncome = 0;
-        for (int i = 0; i < ledger.getIncomeList().size(); i++) {
-            totalIncome += ledger.getIncome(i).getAmount();
-        }
-        double totalExpense = 0;
-        for (int i = 0; i < ledger.getExpenses().size(); i++) {
-            totalExpense += ledger.getExpense(i).getAmount();
-        }
         System.out.println("\n------ SUMMARY ------");
-        System.out.println("\nTotal Income: $" + dec.format(totalIncome));
-        System.out.println("\nTotal expenditure : $" + dec.format(totalExpense));
+        System.out.println("\nTotal Income: $" + dec.format(ledger.totalIncome()));
+        System.out.println("\nTotal expenditure : $" + dec.format(ledger.totalExpenses()));
         System.out.println("\nSaving Goal: ");
         if (ledger.getGoals().size() == 0) {
             System.out.println("NULL");

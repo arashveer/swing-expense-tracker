@@ -1,64 +1,84 @@
 package ui;
 
+import model.Expense;
+import model.Income;
 import model.Ledger;
+import model.SavingGoal;
 import persistence.JsonReader;
 import persistence.JsonWriter;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.plaf.ColorUIResource;
+import javax.swing.plaf.FontUIResource;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.text.DecimalFormat;
 
 public class ExpenseAppUI extends JFrame {
     private static final int WIDTH = 700; // width of the app
     private static final int HEIGHT = 600; // height of the app
     private JPanel panel;
-    private JFrame frame; // main frame
+    private Dashboard dash;
+    private ExpensesPanel expensesPanel;
+    private IncomePanel incomePanel;
+    private GoalsPanel goalsPanel;
     private JTabbedPane tabs;
     private JMenuBar menuBar;
+    private JLabel balance;
     Ledger ledger;
     private JsonWriter jsonWriter;
     private JsonReader jsonReader;
-    DecimalFormat dec = new DecimalFormat("#0.00");
     private static final String JSON_STORE = "./data/data.json";
+    ImageIcon logo = new ImageIcon("./data/logo.png");
+    ImageIcon smallLogo = new ImageIcon(logo.getImage().getScaledInstance(620,150, Image.SCALE_DEFAULT));
 
     public ExpenseAppUI() {
         init();
 
-        frame.setSize(WIDTH, HEIGHT);
+        setSize(WIDTH, HEIGHT);
+        setTitle("Expense Tracker");
+        setBackground(ColorUIResource.DARK_GRAY);
         setContentPane(panel);
 
-        panel.setLayout(new BorderLayout());
         createTabs();
         createMenuBar();
+        revalidate();
+        repaint();
 
-        frame.add(panel,BorderLayout.CENTER);
-        frame.setLocationRelativeTo(null);  // centers the frame
-        frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
-        frame.setVisible(true);
-        frame.setResizable(false);
+        setLocationRelativeTo(null);  // centers the frame
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setVisible(true);
+        setResizable(false);
+        getData();
     }
 
     private void init() {
-        frame = new JFrame("Expense Tracker");
         panel = new JPanel();
         tabs = new JTabbedPane();
+        tabs.setBackground(ColorUIResource.GRAY);
+        tabs.setForeground(ColorUIResource.BLACK);
         menuBar = new JMenuBar();
-
+        ledger = new Ledger();
         jsonWriter = new JsonWriter(JSON_STORE);
         jsonReader = new JsonReader(JSON_STORE);
+
+        balance = new JLabel("0.00");
     }
 
     private void createTabs() {
-        JComponent dash = makeTextPanel("Dashboard");
+        dash = new Dashboard();
         tabs.addTab("Dashboard",dash);
 
-        JComponent expensesPanel = makeTextPanel("Expenses");
+        expensesPanel = new ExpensesPanel();
         tabs.addTab("Expenses",expensesPanel);
+
+        incomePanel = new IncomePanel();
+        tabs.addTab("Incomes",incomePanel);
+
+        goalsPanel = new GoalsPanel();
+        tabs.addTab("Saving Goals",goalsPanel);
 
         tabs.setPreferredSize(new Dimension(670,550));
         panel.add(tabs);
@@ -86,7 +106,7 @@ public class ExpenseAppUI extends JFrame {
         menuBar.add(file);
         menuBar.add(exit);
 
-        frame.setJMenuBar(menuBar);
+        setJMenuBar(menuBar);
     }
 
     /**
@@ -108,26 +128,19 @@ public class ExpenseAppUI extends JFrame {
     private void menuExit(JMenu exit) {
         exit.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
-                int confirmNewFile = JOptionPane.showConfirmDialog(null,
+                int confirmExit = JOptionPane.showConfirmDialog(null,
                         "Do you want to save your file before quitting the app?",
                         "Save before exit",
-                        JOptionPane.YES_NO_OPTION);
+                        JOptionPane.YES_NO_CANCEL_OPTION);
 
-                if (confirmNewFile == JOptionPane.YES_OPTION) {
+                if (confirmExit == JOptionPane.YES_OPTION) {
                     jsonWrite();
                 }
-                System.exit(0);
+                if (confirmExit == JOptionPane.NO_OPTION) {
+                    System.exit(0);
+                }
             }
         });
-    }
-
-    protected JComponent makeTextPanel(String text) {
-        JPanel panel = new JPanel(false);
-        JLabel filler = new JLabel(text);
-        filler.setHorizontalAlignment(JLabel.CENTER);
-        panel.setLayout(new GridLayout(1, 1));
-        panel.add(filler);
-        return panel;
     }
 
     /**
@@ -136,7 +149,7 @@ public class ExpenseAppUI extends JFrame {
     private class NewFileAction extends AbstractAction {
 
         NewFileAction() {
-            super("New file");
+            super("Reset");
         }
 
         @Override
@@ -147,6 +160,7 @@ public class ExpenseAppUI extends JFrame {
                     JOptionPane.YES_NO_CANCEL_OPTION);
             if (confirmNewFile == JOptionPane.YES_OPTION) {
                 ledger = new Ledger();
+                update();
             }
         }
     }
@@ -157,7 +171,7 @@ public class ExpenseAppUI extends JFrame {
     private class LoadFileAction extends AbstractAction {
 
         LoadFileAction() {
-            super("Load file");
+            super("Sync");
         }
 
         @Override
@@ -170,8 +184,10 @@ public class ExpenseAppUI extends JFrame {
                 try {
                     ledger = jsonReader.read();
                     JOptionPane.showMessageDialog(null,
-                            "Loaded ledger with balance of $" + dec.format(ledger.getBalance())
+                            "Loaded ledger with balance of $"
+                                    + String.format("%,.2f",Double.parseDouble(balance.getText()))
                             + " from " + JSON_STORE);
+                    update();
                 } catch (IOException e) {
                     JOptionPane.showMessageDialog(null,"Unable to read from file: " + JSON_STORE);
                 }
@@ -186,7 +202,7 @@ public class ExpenseAppUI extends JFrame {
     private class SaveFileAction extends AbstractAction {
 
         SaveFileAction() {
-            super("Save file");
+            super("Save");
         }
 
         @Override
@@ -202,19 +218,534 @@ public class ExpenseAppUI extends JFrame {
         }
     }
 
+    public class Dashboard extends JPanel {
+        JLabel welcome;
+        JLabel info;
+        JLabel goalInfo;
+        JLabel logoLabel;
+
+        Dashboard() {
+            setLayout(new BoxLayout(this,BoxLayout.PAGE_AXIS));
+            setBorder(new EmptyBorder(5, 15, 10, 10));
+            logoLabel = new JLabel(smallLogo);
+            welcomeLabel();
+            infoLabel();
+            goalLabel();
+            addComponents();
+        }
+
+        private void welcomeLabel() {
+            welcome = new JLabel("<html><h1>Welcome !</h1></html>");
+        }
+
+        private void infoLabel() {
+            info = new JLabel(homeHtml(
+                    String.format("%,.2f",Double.parseDouble(balance.getText())),
+                    String.format("%,.2f",ledger.totalIncome()),
+                    String.format("%,.2f",ledger.totalExpenses())
+            ));
+        }
+
+        private String homeHtml(String balance, String income, String expense) {
+            return "<html><table width='500px'><tr><td width='33%'>"
+                    + "<span style='font-size:14px; color:#8a8a8a;'>Balance</span><br>"
+                    + "<span style='font-size:36px;'>$" + balance + "</span></td></tr><tr>"
+                    + "<td width='50%'> <span style='font-size:14px; color:#8a8a8a;'>Income</span><br>"
+                    + "<span style='font-size:36px;'>$" + income + "</span></td>"
+                    + "<td width='50%'> <span style='font-size:14px; color:#8a8a8a;'>Expenses</span><br>"
+                    + "<span style='font-size:36px;'>$" + expense + "</span></td></tr></table></html>";
+        }
+
+        private void goalLabel() {
+            goalInfo = new JLabel();
+            if (ledger.getGoals().size() == 0) {
+                goalInfo.setText("<html><h2>Latest Saving Goal:</h2><br>You have not created any saving goals.</html>");
+                return;
+            }
+            String data = "<html><h2>Latest Saving Goal: </h2><br>"
+                    + ledger.getSavingGoal(ledger.getGoals().size() - 1);
+            goalInfo.setText(data);
+        }
+
+        public void setInfoLabel() {
+            info.setText(homeHtml(
+                    String.format("%,.2f",Double.parseDouble(balance.getText())),
+                    String.format("%,.2f",ledger.totalIncome()),
+                    String.format("%,.2f",ledger.totalExpenses()
+                    )
+            ));
+        }
+
+        private void setGoalLabel() {
+            goalInfo.setText("<html><h2>Latest Saving Goal: </h2><br>"
+                    + ledger.getSavingGoal((ledger.getGoals()).size() - 1).getName() + ": $"
+                    + String.format("%,.2f",ledger.getSavingGoal((ledger.getGoals()).size() - 1).getCurrentAmount())
+                    + " out of $"
+                    + String.format("%,.2f",ledger.getSavingGoal((ledger.getGoals()).size() - 1).getGoalAmount()));
+        }
+
+        private void addComponents() {
+            this.add(logoLabel);
+            this.add(welcome);
+            this.add(info);
+            this.add(Box.createRigidArea(new Dimension(0,20)));
+            this.add(goalInfo);
+        }
+    }
+
+    public class IncomePanel extends JPanel {
+        JLabel welcome;
+        JButton addIncomeBtn;
+        JPanel incomesPanel;
+        JScrollPane scrollPane;
+        GridBagConstraints constraints;
+        String[] columnNames = {"Source", "Amount ($)"};
+        Object[][] incomesData;
+
+        IncomePanel() {
+            setLayout(new GridBagLayout());
+            constraints = new GridBagConstraints();
+            constraints.fill = GridBagConstraints.BOTH;
+            scrollPane = new JScrollPane();
+            incomesPanel = new JPanel(new GridLayout());
+            setBorder(new EmptyBorder(5, 15, 10, 10));
+            welcomeLabel();
+            addIncomeButton();
+            showIncomes();
+        }
+
+        private void welcomeLabel() {
+            welcome = new JLabel("<html><h1>List of Incomes</h1></html>");
+
+            constraints.gridx = 0;
+            constraints.gridy = 0;
+            constraints.weightx = 0.5;
+            constraints.gridheight = 1;
+
+            this.add(welcome, constraints);
+        }
+
+        private void addIncomeButton() {
+            addIncomeBtn = new JButton("Add an Income");
+            addIncomeBtn.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    addIncomePopUp();
+                }
+            });
+            constraints.gridx = 2;
+            constraints.gridy = 0;
+            constraints.weightx = 0;
+            constraints.weighty = 0;
+
+            this.add(addIncomeBtn, constraints);
+        }
+
+        private void addIncomePopUp() {
+            JPanel panel = new JPanel(new GridLayout(0, 1));
+            JTextField source = new JTextField();
+            JTextField amount = new JTextField();
+
+            panel.add(new JLabel("Source"));
+            panel.add(source);
+            panel.add(new JLabel("Amount in ($)"));
+            panel.add(amount);
+            int result = JOptionPane.showConfirmDialog(null, panel, "Add an Income",
+                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+            if (result == JOptionPane.OK_OPTION) {
+                if (source.getText().isEmpty() || amount.getText().isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Adding income failed, please try again.");
+                }
+                ledger.addIncome(Double.parseDouble(amount.getText()), source.getText());
+                jsonWriteNoMsg();
+                JOptionPane.showMessageDialog(null, "Income added successfully!");
+            }
+        }
+
+        private void showIncomes() {
+            if (scrollPane.getParent() == incomesPanel) {
+                incomesPanel.remove(scrollPane);
+            }
+            if (ledger.getIncomeList().size() != 0) {
+                incomesData = new Object[ledger.getIncomeList().size()][2];
+                addIncomesToTable(incomesData);
+                JTable table = new JTable(incomesData, columnNames);
+                table.setDefaultEditor(Object.class, null);
+                table.setRowHeight(30);
+                scrollPane = new JScrollPane(table);
+                table.setFillsViewportHeight(true);
+                incomesPanel.add(scrollPane);
+                incomesPanel.revalidate();
+                incomesPanel.repaint();
+                constraints.gridwidth = 3;
+                constraints.gridx = 0;
+                constraints.gridy = 1;
+                constraints.weighty = 1;
+                constraints.weightx = 1;
+            }
+            this.add(incomesPanel, constraints);
+        }
+
+        private void addIncomesToTable(Object[][] incomesData) {
+            for (int r = 0; r < ledger.getIncomeList().size(); r++) {
+                Income income = ledger.getIncome(r);
+                incomesData[r][0] = income.getSource();
+                incomesData[r][1] = income.getAmount();
+            }
+        }
+    }
+
+    public class ExpensesPanel extends JPanel {
+        JLabel welcome;
+        JButton addExpenseBtn;
+        JPanel expensesPanel;
+        GridBagConstraints constraints;
+        JScrollPane scrollPane;
+        String[] columnNames = {"Title", "Amount ($)", "Date", "Notes"};
+        Object[][] expensesData;
+
+        ExpensesPanel() {
+            setLayout(new GridBagLayout());
+            constraints = new GridBagConstraints();
+            constraints.fill = GridBagConstraints.BOTH;
+            scrollPane = new JScrollPane();
+            expensesPanel = new JPanel(new GridLayout());
+            setBorder(new EmptyBorder(5, 15, 10, 10));
+            welcomeLabel();
+            addExpenseButton();
+            showExpenses();
+        }
+
+        private void welcomeLabel() {
+            welcome = new JLabel("<html><h1>List of Expenses</h1></html>");
+
+            constraints.gridx = 0;
+            constraints.gridy = 0;
+            constraints.weightx = 0.5;
+            constraints.gridheight = 1;
+
+            this.add(welcome, constraints);
+        }
+
+        private void addExpenseButton() {
+            addExpenseBtn = new JButton("Add an Expense");
+            addExpenseBtn.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    addExpensePopUp();
+                }
+            });
+            constraints.gridx = 2;
+            constraints.gridy = 0;
+            constraints.weightx = 0;
+            constraints.weighty = 0;
+
+            this.add(addExpenseBtn, constraints);
+        }
+
+        private void addExpensePopUp() {
+            JPanel panel = new JPanel(new GridLayout(0, 1));
+            JTextField name = new JTextField();
+            JTextField amount = new JTextField();
+            JTextField date = new JTextField();
+            JTextField note = new JTextField();
+            panel.add(new JLabel("Source"));
+            panel.add(name);
+            panel.add(new JLabel("Amount in ($)"));
+            panel.add(amount);
+            panel.add(new JLabel("Date (e.g. 25 Dec, 2022)"));
+            panel.add(date);
+            panel.add(new JLabel("Note"));
+            panel.add(note);
+            int result = JOptionPane.showConfirmDialog(null, panel, "Add an Expense",
+                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+            if (result == JOptionPane.OK_OPTION) {
+                if (name.getText().isEmpty() || amount.getText().isEmpty() || date.getText().isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Adding expense failed, please try again.");
+                }
+                ledger.addExpense(name.getText(), Double.parseDouble(amount.getText()),date.getText(),note.getText());
+                jsonWriteNoMsg();
+                JOptionPane.showMessageDialog(null, "Expense added successfully!");
+            }
+        }
+
+        private void showExpenses() {
+            if (scrollPane.getParent() == expensesPanel) {
+                expensesPanel.remove(scrollPane);
+            }
+            if (ledger.getExpenses().size() != 0) {
+                expensesData = new Object[ledger.getExpenses().size()][4];
+                addExpensesToTable(expensesData);
+                JTable table = new JTable(expensesData, columnNames);
+                table.setDefaultEditor(Object.class, null);
+                table.setRowHeight(30);
+                scrollPane = new JScrollPane(table);
+                table.setFillsViewportHeight(true);
+                expensesPanel.add(scrollPane);
+                expensesPanel.revalidate();
+                expensesPanel.repaint();
+                constraints.gridwidth = 3;
+                constraints.gridx = 0;
+                constraints.gridy = 1;
+                constraints.weighty = 1;
+                constraints.weightx = 1;
+            }
+            this.add(expensesPanel, constraints);
+        }
+
+        private void addExpensesToTable(Object[][] expensesData) {
+            for (int r = 0; r < ledger.getExpenses().size(); r++) {
+                Expense expense = ledger.getExpense(r);
+                expensesData[r][0] = expense.getTitle();
+                expensesData[r][1] = expense.getAmount();
+                expensesData[r][2] = expense.getDate();
+                expensesData[r][3] = expense.getNote();
+            }
+        }
+
+    }
+
+    public class GoalsPanel extends JPanel {
+        JLabel welcome;
+        JButton addGoalBtn;
+        JButton contributeBtn;
+        JPanel goalsPanel;
+        JComboBox<Object> goalsList;
+        JScrollPane scrollPane;
+        GridBagConstraints constraints;
+
+        int temp;
+        String[] columnNames = {"Title", "Current Amount ($)", "Goal Amount ($)", "Status"};
+        Object[][] goalsData;
+
+        GoalsPanel() {
+            setLayout(new GridBagLayout());
+            constraints = new GridBagConstraints();
+            constraints.fill = GridBagConstraints.BOTH;
+            scrollPane = new JScrollPane();
+            goalsPanel = new JPanel(new GridLayout());
+            setBorder(new EmptyBorder(5, 15, 10, 10));
+            welcomeLabel();
+            addGoalButton();
+            contributeButton();
+            showGoals();
+        }
+
+        private void welcomeLabel() {
+            welcome = new JLabel("<html><h1>Saving Goals</h1></html>");
+
+            constraints.gridx = 0;
+            constraints.gridy = 0;
+            constraints.weightx = 0.5;
+            constraints.gridheight = 1;
+
+            this.add(welcome, constraints);
+        }
+
+        private void addGoalButton() {
+            addGoalBtn = new JButton("Add a Saving Goal");
+            addGoalBtn.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    addGoalPopUp();
+                }
+            });
+            constraints.gridx = 1;
+            constraints.gridy = 0;
+            constraints.weightx = 0;
+            constraints.weighty = 0;
+
+            this.add(addGoalBtn, constraints);
+        }
+
+        private void contributeButton() {
+            contributeBtn = new JButton("Contribute");
+            contributeBtn.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    contributeCombo();
+                }
+            });
+            constraints.gridx = 2;
+            constraints.gridy = 0;
+            constraints.weightx = 0;
+            constraints.weighty = 0;
+
+            this.add(contributeBtn, constraints);
+        }
+
+        private void addGoalPopUp() {
+            JPanel panel = new JPanel(new GridLayout(0, 1));
+            JTextField name = new JTextField();
+            JTextField goalAmount = new JTextField();
+
+            panel.add(new JLabel("Goal Name"));
+            panel.add(name);
+            panel.add(new JLabel("Goal Amount in ($)"));
+            panel.add(goalAmount);
+            int result = JOptionPane.showConfirmDialog(null, panel, "Add a Saving Goal",
+                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+            if (result == JOptionPane.OK_OPTION) {
+                if (name.getText().isEmpty() || goalAmount.getText().isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Adding saving goal failed, please try again.");
+                }
+                ledger.setSavingGoal(name.getText(), Double.parseDouble(goalAmount.getText()));
+                jsonWriteNoMsg();
+                JOptionPane.showMessageDialog(null, "Saving goal added successfully!");
+            }
+        }
+
+        private void contributeCombo() {
+            Object[] chooseGoalData = new Object[ledger.getGoals().size()];
+            for (int r = 0; r < ledger.getGoals().size(); r++) {
+                chooseGoalData[r] = ledger.getSavingGoal(r).getName();
+            }
+            goalsList = new JComboBox<>(chooseGoalData);
+            goalsList.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    temp = goalsList.getSelectedIndex();
+                }
+            });
+            contributePopUp(temp);
+        }
+
+        private void contributePopUp(int index) {
+            JPanel panel = new JPanel(new GridLayout(0, 1));
+            JTextField amount = new JTextField();
+            panel.add(new JLabel("Goal"));
+            panel.add(goalsList);
+            panel.add(new JLabel("Contribution in ($)"));
+            panel.add(amount);
+            int result = JOptionPane.showConfirmDialog(null, panel, "Contribute to a Goal",
+                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+            if (result == JOptionPane.OK_OPTION) {
+                if (amount.getText().isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Contributing to goal failed, please try again.");
+                }
+                boolean success = ledger.addToSavingGoal(index, Double.parseDouble(amount.getText()));
+                if (!success) {
+                    JOptionPane.showMessageDialog(null, "Failed to add contribution");
+                    return;
+                }
+                jsonWriteNoMsg();
+                JOptionPane.showMessageDialog(null, "Contribution done successfully!");
+            }
+        }
+
+        private void showGoals() {
+            if (scrollPane.getParent() == goalsPanel) {
+                goalsPanel.remove(scrollPane);
+            }
+            if (ledger.getGoals().size() != 0) {
+                goalsData = new Object[ledger.getGoals().size()][4];
+                addGoalsToTable(goalsData);
+                JTable table = new JTable(goalsData, columnNames);
+                table.setDefaultEditor(Object.class, null);
+                table.setRowHeight(30);
+                scrollPane = new JScrollPane(table);
+                table.setFillsViewportHeight(true);
+                goalsPanel.add(scrollPane);
+                goalsPanel.revalidate();
+                goalsPanel.repaint();
+                constraints.gridwidth = 3;
+                constraints.gridx = 0;
+                constraints.gridy = 1;
+                constraints.weighty = 1;
+                constraints.weightx = 1;
+            }
+            this.add(goalsPanel, constraints);
+        }
+
+        private void addGoalsToTable(Object[][] goalsData) {
+            for (int r = 0; r < ledger.getGoals().size(); r++) {
+                SavingGoal goal = ledger.getSavingGoal(r);
+                goalsData[r][0] = goal.getName();
+                goalsData[r][1] = goal.getCurrentAmount();
+                goalsData[r][2] = goal.getGoalAmount();
+                if (goal.isComplete()) {
+                    goalsData[r][3] = "Completed";
+                } else {
+                    goalsData[r][3] = "Ongoing";
+                }
+            }
+        }
+    }
+
+
     // EFFECTS: saves the ledger to file
     private void jsonWrite() {
         try {
             jsonWriter.open();
             jsonWriter.write(ledger);
             jsonWriter.close();
+            update();
             JOptionPane.showMessageDialog(null,"Saved data to " + JSON_STORE);
         } catch (FileNotFoundException e) {
             JOptionPane.showMessageDialog(null,"Unable to write to file: " + JSON_STORE);
         }
     }
 
+    // EFFECTS: for writing ledger to json without any popups showing
+    private void jsonWriteNoMsg() {
+        try {
+            jsonWriter.open();
+            jsonWriter.write(ledger);
+            jsonWriter.close();
+            update();
+        } catch (FileNotFoundException e) {
+            System.out.println("Unable to write to file: " + JSON_STORE);
+        }
+    }
+
+    private void getData() {
+        try {
+            ledger = jsonReader.read();
+            update();
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null,"Unable to read from file: " + JSON_STORE);
+        }
+    }
+
+    /*
+     * Updates the components to display new data
+     */
+    private void update() {
+        balance.setText(String.valueOf(ledger.getBalance()));
+        dash.setInfoLabel();
+        if (ledger.getGoals().size() != 0) {
+            dash.setGoalLabel();
+        }
+        expensesPanel.showExpenses();
+        incomePanel.showIncomes();
+        goalsPanel.showGoals();
+    }
+
+    private static void setFont(FontUIResource myFont) {
+        UIManager.put("Button.font", myFont);
+        UIManager.put("Label.font", myFont);
+        UIManager.put("List.font", myFont);
+        UIManager.put("RadioButtonMenuItem.acceleratorFont", myFont);
+        UIManager.put("RadioButtonMenuItem.font", myFont);
+        UIManager.put("CheckBoxMenuItem.font", myFont);
+        UIManager.put("OptionPane.buttonFont", myFont);
+        UIManager.put("OptionPane.messageFont", myFont);
+        UIManager.put("OptionPane.font", myFont);
+        UIManager.put("Panel.font", myFont);
+        UIManager.put("TabbedPane.font", myFont);
+        UIManager.put("Table.font", myFont);
+        UIManager.put("TableHeader.font", myFont);
+        UIManager.put("TextField.font", myFont);
+        UIManager.put("TextArea.font", myFont);
+        UIManager.put("TextPane.font", myFont);
+        UIManager.put("TabbedPane.smallFont", myFont);
+        UIManager.put("TitledBorder.font", myFont);
+        UIManager.put("ToolBar.font", myFont);
+        UIManager.put("FormattedTextField.font", myFont);
+        UIManager.put("InternalFrame.optionDialogTitleFont", myFont);
+        UIManager.put("InternalFrame.paletteTitleFont", myFont);
+        UIManager.put("InternalFrame.titleFont", myFont);
+    }
+
     public static void main(String[] args) {
+        setFont(new FontUIResource(new Font("Tahoma", Font.PLAIN, 16)));
         new ExpenseAppUI();
     }
 }
