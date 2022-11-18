@@ -1,5 +1,5 @@
 {
-    "balance": 42949.31,
+    "balance": 42920.020000000004,
     "data": [
         {"incomes": [
             {
@@ -59,6 +59,12 @@
                 "note": "New clothes",
                 "amount": 130.23,
                 "title": "Uniqlo"
+            },
+            {
+                "date": "10 Oct, 2022",
+                "note": "Food",
+                "amount": 29.29,
+                "title": "McDonalds"
             }
         ]},
         {"goals": [

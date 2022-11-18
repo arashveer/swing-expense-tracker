@@ -1,3 +1,8 @@
+/*
+ * THIS UI APPLICATION IS CREATED USING THE JAVA SWING DOCUMENTATION AVAILABLE AT:
+ * https://docs.oracle.com/javase/tutorial/uiswing/components/index.html
+ */
+
 package ui;
 
 import model.Expense;
@@ -18,7 +23,7 @@ import java.io.IOException;
 public class ExpenseAppUI extends JFrame {
     private static final int WIDTH = 700; // width of the app
     private static final int HEIGHT = 600; // height of the app
-    private JPanel panel;
+    private JPanel panel; // main panel
     private Dashboard dash;
     private ExpensesPanel expensesPanel;
     private IncomePanel incomePanel;
@@ -26,13 +31,14 @@ public class ExpenseAppUI extends JFrame {
     private JTabbedPane tabs;
     private JMenuBar menuBar;
     private JLabel balance;
-    Ledger ledger;
+    Ledger ledger; // object
     private JsonWriter jsonWriter;
     private JsonReader jsonReader;
     private static final String JSON_STORE = "./data/data.json";
     ImageIcon logo = new ImageIcon("./data/logo.png");
     ImageIcon smallLogo = new ImageIcon(logo.getImage().getScaledInstance(620,150, Image.SCALE_DEFAULT));
 
+    // EFFECTS: constructs the app frame, add various components like panels
     public ExpenseAppUI() {
         init();
 
@@ -53,6 +59,7 @@ public class ExpenseAppUI extends JFrame {
         getData();
     }
 
+    // EFFECTS: initialize high level objects which goes into main frame
     private void init() {
         panel = new JPanel();
         tabs = new JTabbedPane();
@@ -66,6 +73,7 @@ public class ExpenseAppUI extends JFrame {
         balance = new JLabel("0.00");
     }
 
+    // EFFECTS: add tabs to the JTabbedPane tabs
     private void createTabs() {
         dash = new Dashboard();
         tabs.addTab("Dashboard",dash);
@@ -85,6 +93,7 @@ public class ExpenseAppUI extends JFrame {
 
     /**
      *  MENU BAR
+     *  EFFECTS: add menus to the menubar and add actions to the menu items
      */
     private void createMenuBar() {
         JMenu file = new JMenu("File");
@@ -94,12 +103,9 @@ public class ExpenseAppUI extends JFrame {
         file.setMnemonic('N');
         exit.setMnemonic('E');
 
-        addMenuItem(file, new NewFileAction(),
-                KeyStroke.getKeyStroke("control N"));
-        addMenuItem(file, new LoadFileAction(),
-                KeyStroke.getKeyStroke("control L"));
-        addMenuItem(file, new SaveFileAction(),
-                KeyStroke.getKeyStroke("control S"));
+        addMenuItem(file, new NewFileAction());
+        addMenuItem(file, new LoadFileAction());
+        addMenuItem(file, new SaveFileAction());
         menuExit(exit);
         // add menu items to menu bar
         menuBar.add(file);
@@ -110,14 +116,9 @@ public class ExpenseAppUI extends JFrame {
 
     /**
      * Adds an item with given handler to the given menu
-     * @param theMenu  menu to which new item is added
-     * @param action   handler for new menu item
-     * @param accelerator    keystroke accelerator for this menu item
      */
-    private void addMenuItem(JMenu theMenu, AbstractAction action, KeyStroke accelerator) {
+    private void addMenuItem(JMenu theMenu, AbstractAction action) {
         JMenuItem menuItem = new JMenuItem(action);
-        menuItem.setMnemonic(menuItem.getText().charAt(0));
-        menuItem.setAccelerator(accelerator);
         theMenu.add(menuItem);
     }
 
@@ -184,7 +185,7 @@ public class ExpenseAppUI extends JFrame {
                     ledger = jsonReader.read();
                     JOptionPane.showMessageDialog(null,
                             "Loaded ledger with balance of $"
-                                    + String.format("%,.2f",Double.parseDouble(balance.getText()))
+                                    + String.format("%,.2f",ledger.getBalance())
                             + " from " + JSON_STORE);
                     update();
                 } catch (IOException e) {
@@ -217,12 +218,16 @@ public class ExpenseAppUI extends JFrame {
         }
     }
 
+    /*
+     * Dashboard panel in the tabs JTabbedPane
+     */
     public class Dashboard extends JPanel {
         JLabel welcome;
         JLabel info;
         JLabel goalInfo;
         JLabel logoLabel;
 
+        // EFFECTS: constructs this panel then creates and add components to it
         Dashboard() {
             setLayout(new BoxLayout(this,BoxLayout.PAGE_AXIS));
             setBorder(new EmptyBorder(5, 15, 10, 10));
@@ -233,10 +238,12 @@ public class ExpenseAppUI extends JFrame {
             addComponents();
         }
 
+        // EFFECTS: shows Welcome text
         private void welcomeLabel() {
             welcome = new JLabel("<html><h1>Welcome !</h1></html>");
         }
 
+        // EFFECTS: initial info label when no data is loaded
         private void infoLabel() {
             info = new JLabel(homeHtml(
                     String.format("%,.2f",Double.parseDouble(balance.getText())),
@@ -245,6 +252,7 @@ public class ExpenseAppUI extends JFrame {
             ));
         }
 
+        // EFFECTS: string with all the dashboard info
         private String homeHtml(String balance, String income, String expense) {
             return "<html><table width='500px'><tr><td width='33%'>"
                     + "<span style='font-size:14px; color:#8a8a8a;'>Balance</span><br>"
@@ -255,6 +263,7 @@ public class ExpenseAppUI extends JFrame {
                     + "<span style='font-size:36px;'>$" + expense + "</span></td></tr></table></html>";
         }
 
+        // EFFECTS: goal label with most recent saving goal being shown
         private void goalLabel() {
             goalInfo = new JLabel();
             if (ledger.getGoals().size() == 0) {
@@ -266,6 +275,7 @@ public class ExpenseAppUI extends JFrame {
             goalInfo.setText(data);
         }
 
+        // EFFECTS: sets the info label once data is loaded
         public void setInfoLabel() {
             info.setText(homeHtml(
                     String.format("%,.2f",Double.parseDouble(balance.getText())),
@@ -275,6 +285,7 @@ public class ExpenseAppUI extends JFrame {
             ));
         }
 
+        // EFFECTS: sets the goal label once data is loaded
         private void setGoalLabel() {
             goalInfo.setText("<html><h2>Latest Saving Goal: </h2><br>"
                     + ledger.getSavingGoal((ledger.getGoals()).size() - 1).getName() + ": $"
@@ -283,6 +294,7 @@ public class ExpenseAppUI extends JFrame {
                     + String.format("%,.2f",ledger.getSavingGoal((ledger.getGoals()).size() - 1).getGoalAmount()));
         }
 
+        // EFFECTS: adds all the components to the dashboard
         private void addComponents() {
             this.add(logoLabel);
             this.add(welcome);
@@ -292,6 +304,9 @@ public class ExpenseAppUI extends JFrame {
         }
     }
 
+    /*
+     * Income panel in the tabs JTabbedPane
+     */
     public class IncomePanel extends JPanel {
         JLabel welcome;
         JButton addIncomeBtn;
@@ -301,6 +316,9 @@ public class ExpenseAppUI extends JFrame {
         String[] columnNames = {"Source", "Amount ($)"};
         Object[][] incomesData;
 
+        /* EFFECTS: constructs this income panel then creates and add components to it
+         * uses GridBagLayout to have this layout work as grids and set the layout using GridBagConstraints
+         */
         IncomePanel() {
             setLayout(new GridBagLayout());
             constraints = new GridBagConstraints();
@@ -313,6 +331,7 @@ public class ExpenseAppUI extends JFrame {
             showIncomes();
         }
 
+        // EFFECTS: shows Welcome text
         private void welcomeLabel() {
             welcome = new JLabel("<html><h1>List of Incomes</h1></html>");
 
@@ -324,6 +343,7 @@ public class ExpenseAppUI extends JFrame {
             this.add(welcome, constraints);
         }
 
+        // EFFECTS: create add income button with a listener for when its clicked
         private void addIncomeButton() {
             addIncomeBtn = new JButton("Add an Income");
             addIncomeBtn.addActionListener(new ActionListener() {
@@ -339,6 +359,10 @@ public class ExpenseAppUI extends JFrame {
             this.add(addIncomeBtn, constraints);
         }
 
+        /* EFFECTS: add income button which clicked calls this function
+         * creates a popup window using JOptionPane to ask for data to create new income object
+         * after creation, writes it to the json file
+         */
         private void addIncomePopUp() {
             JPanel panel = new JPanel(new GridLayout(0, 1));
             JTextField source = new JTextField();
@@ -361,6 +385,7 @@ public class ExpenseAppUI extends JFrame {
             }
         }
 
+        // EFFECTS: if there are incomes in ledger, creates a 2D array of incomes and displays it as a table
         private void showIncomes() {
             if (scrollPane.getParent() == incomesPanel) {
                 incomesPanel.remove(scrollPane);
@@ -385,6 +410,7 @@ public class ExpenseAppUI extends JFrame {
             this.add(incomesPanel, constraints);
         }
 
+        // EFFECTS: helper function to add incomes to incomesData 2D array
         private void addIncomesToTable(Object[][] incomesData) {
             for (int r = 0; r < ledger.getIncomeList().size(); r++) {
                 Income income = ledger.getIncome(r);
@@ -394,6 +420,9 @@ public class ExpenseAppUI extends JFrame {
         }
     }
 
+    /*
+     * Expenses panel in the tabs JTabbedPane
+     */
     public class ExpensesPanel extends JPanel {
         JLabel welcome;
         JButton addExpenseBtn;
@@ -403,6 +432,9 @@ public class ExpenseAppUI extends JFrame {
         String[] columnNames = {"Title", "Amount ($)", "Date", "Notes"};
         Object[][] expensesData;
 
+        /* EFFECTS: constructs this expenses panel then creates and add components to it
+         * uses GridBagLayout to have this layout work as grids and set the layout using GridBagConstraints
+         */
         ExpensesPanel() {
             setLayout(new GridBagLayout());
             constraints = new GridBagConstraints();
@@ -415,6 +447,7 @@ public class ExpenseAppUI extends JFrame {
             showExpenses();
         }
 
+        // EFFECTS: shows Welcome text
         private void welcomeLabel() {
             welcome = new JLabel("<html><h1>List of Expenses</h1></html>");
 
@@ -426,6 +459,7 @@ public class ExpenseAppUI extends JFrame {
             this.add(welcome, constraints);
         }
 
+        // EFFECTS: create add expense button with a listener for when its clicked
         private void addExpenseButton() {
             addExpenseBtn = new JButton("Add an Expense");
             addExpenseBtn.addActionListener(new ActionListener() {
@@ -441,6 +475,10 @@ public class ExpenseAppUI extends JFrame {
             this.add(addExpenseBtn, constraints);
         }
 
+        /* EFFECTS: add expense button which when clicked calls this function
+         * creates a popup window using JOptionPane to ask for data to create new expense object
+         * after creation, writes it to the json file
+         */
         private void addExpensePopUp() {
             JPanel panel = new JPanel(new GridLayout(0, 1));
             JTextField name = new JTextField();
@@ -467,6 +505,7 @@ public class ExpenseAppUI extends JFrame {
             }
         }
 
+        // EFFECTS: if there are expenses in ledger, creates a 2D array of expenses and displays it as a table
         private void showExpenses() {
             if (scrollPane.getParent() == expensesPanel) {
                 expensesPanel.remove(scrollPane);
@@ -491,6 +530,7 @@ public class ExpenseAppUI extends JFrame {
             this.add(expensesPanel, constraints);
         }
 
+        // EFFECTS: helper function to add expenses to expensesData 2D array
         private void addExpensesToTable(Object[][] expensesData) {
             for (int r = 0; r < ledger.getExpenses().size(); r++) {
                 Expense expense = ledger.getExpense(r);
@@ -503,6 +543,9 @@ public class ExpenseAppUI extends JFrame {
 
     }
 
+    /*
+     * Saving Goals panel in the tabs JTabbedPane
+     */
     public class GoalsPanel extends JPanel {
         JLabel welcome;
         JButton addGoalBtn;
@@ -511,10 +554,13 @@ public class ExpenseAppUI extends JFrame {
         JComboBox<String> goalsList;
         JScrollPane scrollPane;
         GridBagConstraints constraints;
-        int temp;
+        int temp; // value of selected item's index in contribute panel combobox
         String[] columnNames = {"Title", "Current Amount ($)", "Goal Amount ($)", "Status"};
         Object[][] goalsData;
 
+        /* EFFECTS: constructs this goals panel then creates and add components to it
+         * uses GridBagLayout to have this layout work as grids and set the layout using GridBagConstraints
+         */
         GoalsPanel() {
             setLayout(new GridBagLayout());
             constraints = new GridBagConstraints();
@@ -528,6 +574,7 @@ public class ExpenseAppUI extends JFrame {
             showGoals();
         }
 
+        // EFFECTS: shows Welcome text
         private void welcomeLabel() {
             welcome = new JLabel("<html><h1>Saving Goals</h1></html>");
 
@@ -539,6 +586,7 @@ public class ExpenseAppUI extends JFrame {
             this.add(welcome, constraints);
         }
 
+        // EFFECTS: creates add saving goal button with a listener for when its clicked
         private void addGoalButton() {
             addGoalBtn = new JButton("Add a Saving Goal");
             addGoalBtn.addActionListener(new ActionListener() {
@@ -554,6 +602,7 @@ public class ExpenseAppUI extends JFrame {
             this.add(addGoalBtn, constraints);
         }
 
+        // EFFECTS: creates contribute to saving goal button with a listener for when its clicked
         private void contributeButton() {
             contributeBtn = new JButton("Contribute");
             contributeBtn.addActionListener(new ActionListener() {
@@ -569,6 +618,10 @@ public class ExpenseAppUI extends JFrame {
             this.add(contributeBtn, constraints);
         }
 
+        /* EFFECTS: add saving goal button which when clicked calls this function
+         * creates a popup window using JOptionPane to ask for data to create new goal object
+         * after creation, writes it to the json file
+         */
         private void addGoalPopUp() {
             JPanel panel = new JPanel(new GridLayout(0, 1));
             JTextField name = new JTextField();
@@ -591,20 +644,10 @@ public class ExpenseAppUI extends JFrame {
             }
         }
 
-        private void contributeCombo() {
-            String[] chooseGoalData = new String[ledger.getGoals().size()];
-            for (int r = 0; r < ledger.getGoals().size(); r++) {
-                chooseGoalData[r] = ledger.getSavingGoal(r).getName();
-            }
-            goalsList = new JComboBox<>(chooseGoalData);
-            goalsList.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    JComboBox comboBox = (JComboBox) e.getSource();
-                    temp = comboBox.getSelectedIndex();
-                }
-            });
-        }
-
+        /* EFFECTS: contribute to saving goal button which when clicked calls this function
+         * creates a popup window using JOptionPane to ask to choose a goal using combobox and the amount to contribute
+         * after contribution, writes it to the json file
+         */
         private void contributePopUp() {
             JPanel panel = new JPanel(new GridLayout(0, 1));
             JTextField amount = new JTextField();
@@ -613,7 +656,6 @@ public class ExpenseAppUI extends JFrame {
             panel.add(goalsList);
             panel.add(new JLabel("Contribution in ($)"));
             panel.add(amount);
-            System.out.println(temp);
             int result = JOptionPane.showConfirmDialog(null, panel, "Contribute to a Goal",
                     JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
             if (result == JOptionPane.OK_OPTION) {
@@ -630,6 +672,26 @@ public class ExpenseAppUI extends JFrame {
             }
         }
 
+        /* EFFECTS: helper function for contributePopUp to create an array of goal titles
+         * creates JComboBox using that array, then adds listener to ComboBox
+         * listener records selected item index and puts it in temp
+         */
+
+        private void contributeCombo() {
+            String[] chooseGoalData = new String[ledger.getGoals().size()];
+            for (int r = 0; r < ledger.getGoals().size(); r++) {
+                chooseGoalData[r] = ledger.getSavingGoal(r).getName();
+            }
+            goalsList = new JComboBox<>(chooseGoalData);
+            goalsList.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    JComboBox comboBox = (JComboBox) e.getSource();
+                    temp = comboBox.getSelectedIndex();
+                }
+            });
+        }
+
+        // EFFECTS: if there are goals in ledger, creates a 2D array of goals and displays it as a table
         private void showGoals() {
             if (scrollPane.getParent() == goalsPanel) {
                 goalsPanel.remove(scrollPane);
@@ -654,6 +716,7 @@ public class ExpenseAppUI extends JFrame {
             this.add(goalsPanel, constraints);
         }
 
+        // EFFECTS: helper function to add goals to goalsData 2D array
         private void addGoalsToTable(Object[][] goalsData) {
             for (int r = 0; r < ledger.getGoals().size(); r++) {
                 SavingGoal goal = ledger.getSavingGoal(r);
@@ -695,6 +758,7 @@ public class ExpenseAppUI extends JFrame {
         }
     }
 
+    // EFFECTS: loads the JSON, used for loading data at start of UI
     private void getData() {
         try {
             ledger = jsonReader.read();

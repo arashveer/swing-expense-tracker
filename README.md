@@ -14,7 +14,8 @@ I wanted to create this app because I have always wanted to understand my spendi
 spreadsheets to simulate a budget app. This app will help me automate most of the basic budgeting and also provide an appealing user interface
 to make budgeting easier.
 
-### User Stories:
+### User Stories
+
 - As a user, I want to add my income sources and view my available money.
 - As a user, I want to see a breakdown of my spending's.
 - As a user, I want to make notes on some of my transactions.
@@ -23,3 +24,25 @@ to make budgeting easier.
 - As a user, I want to load my ledger data from a file. 
 - As a user, when I start the app, I want to be given the option to load my data.
 - As a user, when I close the app, I want to be given the option to save my data.
+- 
+
+# Instructions for Grader
+
+- You can generate the first required event related to adding expense to a expenses by clicking on Expenses tab.
+  Once on expenses panel, click on "Add an Expense" button which will show a popup window.
+  Type your info in this popup and click Yes. Now, your expense will be shown in expenses list.
+- You can generate the second required event related to adding income to a income list by clicking on Incomes tab.
+  Once on incomes panel, click on "Add an Income" button which will show a popup window.
+  Type your info in this popup and click Yes. Now, your income will be shown in incomes list.
+- You can generate the third event related to adding saving goal to a goals by clicking on Saving Goals tab.
+  Once on saving goals panel, click on "Add a Saving Goal" button which will show a popup window.
+  Type your info in this popup and click Yes. Now, your saving goal will be shown in saving goals list.
+  Now, in the same tab, click on "Contribute" button next to "Add a Saving Goal" button.
+  This will bring up another popup window, where you can choose a goal from combobox.
+  Type in the amount to contribute to that goal and click OK.
+  Now your saving goal will have its current amount increased by the contribution amount.
+- You can locate my visual component by clicking on the dashboard tab.
+  It is a logo of this application at top of the dashboard. I created this logo using an online tool called Figma.
+- You can save the state of my application by clicking on "Save" in File menu.
+  Your data is also synced after every creation of an object.
+- You can reload the state of my application by clicking on "Sync" in File menu.
