@@ -197,6 +197,7 @@ public class ExpenseAppUI extends JFrame {
     }
 
     /**
+     * MODIFIES: data.json
      * Represents the action to be taken when the user wants to save a ledger
      */
     private class SaveFileAction extends AbstractAction {
@@ -359,7 +360,8 @@ public class ExpenseAppUI extends JFrame {
             this.add(addIncomeBtn, constraints);
         }
 
-        /* EFFECTS: add income button which clicked calls this function
+        /* MODIFIES: incomes list in ledger
+         * EFFECTS: add income button which clicked calls this function
          * creates a popup window using JOptionPane to ask for data to create new income object
          * after creation, writes it to the json file
          */
@@ -410,12 +412,13 @@ public class ExpenseAppUI extends JFrame {
             this.add(incomesPanel, constraints);
         }
 
+        // MODIFIES: incomesData
         // EFFECTS: helper function to add incomes to incomesData 2D array
         private void addIncomesToTable(Object[][] incomesData) {
             for (int r = 0; r < ledger.getIncomeList().size(); r++) {
                 Income income = ledger.getIncome(r);
                 incomesData[r][0] = income.getSource();
-                incomesData[r][1] = income.getAmount();
+                incomesData[r][1] = String.format("%,.2f",income.getAmount());
             }
         }
     }
@@ -475,7 +478,8 @@ public class ExpenseAppUI extends JFrame {
             this.add(addExpenseBtn, constraints);
         }
 
-        /* EFFECTS: add expense button which when clicked calls this function
+        /* MODIFIES: expenses list in ledger
+         * EFFECTS: add expense button which when clicked calls this function
          * creates a popup window using JOptionPane to ask for data to create new expense object
          * after creation, writes it to the json file
          */
@@ -530,12 +534,13 @@ public class ExpenseAppUI extends JFrame {
             this.add(expensesPanel, constraints);
         }
 
+        // MODIFIES: expensesData
         // EFFECTS: helper function to add expenses to expensesData 2D array
         private void addExpensesToTable(Object[][] expensesData) {
             for (int r = 0; r < ledger.getExpenses().size(); r++) {
                 Expense expense = ledger.getExpense(r);
                 expensesData[r][0] = expense.getTitle();
-                expensesData[r][1] = expense.getAmount();
+                expensesData[r][1] = String.format("%,.2f",expense.getAmount());
                 expensesData[r][2] = expense.getDate();
                 expensesData[r][3] = expense.getNote();
             }
@@ -618,7 +623,8 @@ public class ExpenseAppUI extends JFrame {
             this.add(contributeBtn, constraints);
         }
 
-        /* EFFECTS: add saving goal button which when clicked calls this function
+        /* MODIFIES: goals list in ledger
+         * EFFECTS: add saving goal button which when clicked calls this function
          * creates a popup window using JOptionPane to ask for data to create new goal object
          * after creation, writes it to the json file
          */
@@ -644,7 +650,8 @@ public class ExpenseAppUI extends JFrame {
             }
         }
 
-        /* EFFECTS: contribute to saving goal button which when clicked calls this function
+        /* MODIFIES: goals list in ledger
+         * EFFECTS: contribute to saving goal button which when clicked calls this function
          * creates a popup window using JOptionPane to ask to choose a goal using combobox and the amount to contribute
          * after contribution, writes it to the json file
          */
@@ -672,7 +679,8 @@ public class ExpenseAppUI extends JFrame {
             }
         }
 
-        /* EFFECTS: helper function for contributePopUp to create an array of goal titles
+        /* MODIFIES: goalsList
+         * EFFECTS: helper function for contributePopUp to create an array of goal titles
          * creates JComboBox using that array, then adds listener to ComboBox
          * listener records selected item index and puts it in temp
          */
@@ -716,13 +724,14 @@ public class ExpenseAppUI extends JFrame {
             this.add(goalsPanel, constraints);
         }
 
+        // MODIFIES: goalsData
         // EFFECTS: helper function to add goals to goalsData 2D array
         private void addGoalsToTable(Object[][] goalsData) {
             for (int r = 0; r < ledger.getGoals().size(); r++) {
                 SavingGoal goal = ledger.getSavingGoal(r);
                 goalsData[r][0] = goal.getName();
-                goalsData[r][1] = goal.getCurrentAmount();
-                goalsData[r][2] = goal.getGoalAmount();
+                goalsData[r][1] = String.format("%,.2f",goal.getCurrentAmount());
+                goalsData[r][2] = String.format("%,.2f",goal.getGoalAmount());
                 if (goal.isComplete()) {
                     goalsData[r][3] = "Completed";
                 } else {
@@ -732,7 +741,7 @@ public class ExpenseAppUI extends JFrame {
         }
     }
 
-
+    // MODIFIES: data.json
     // EFFECTS: saves the ledger to file
     private void jsonWrite() {
         try {
@@ -746,6 +755,7 @@ public class ExpenseAppUI extends JFrame {
         }
     }
 
+    // MODIFIES: data.json
     // EFFECTS: for writing ledger to json without any popups showing
     private void jsonWriteNoMsg() {
         try {
@@ -769,6 +779,7 @@ public class ExpenseAppUI extends JFrame {
     }
 
     /*
+     * MODIFIES: this
      * Updates the components to display new data
      */
     private void update() {

@@ -1,5 +1,5 @@
 {
-    "balance": 42920.020000000004,
+    "balance": 41920.020000000004,
     "data": [
         {"incomes": [
             {
@@ -89,7 +89,7 @@
             {
                 "goalAmount": 3000,
                 "name": "Car parts",
-                "currentAmount": 500,
+                "currentAmount": 1500,
                 "complete": false
             }
         ]}
