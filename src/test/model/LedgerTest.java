@@ -27,6 +27,7 @@ public class LedgerTest {
     public void testAddToIncomeList() {
         ledger.addIncome(4468.70,"Company XYZ");
         ledger.addIncome(4168.71,"Company ABC");
+        assertEquals(8637.41, ledger.totalIncome());
 
         assertEquals(2, ledger.getIncomeList().size());
         assertEquals(4168.71, ledger.getIncome(1).getAmount());
@@ -37,6 +38,7 @@ public class LedgerTest {
     public void testAddToExpenseList() {
         ledger.addExpense("Rodgers Mobile", 75.60, "Sept 29", "Mobile Bill");
 
+        assertEquals(75.60, ledger.totalExpenses());
         assertEquals(75.60, ledger.getExpense(0).getAmount());
         assertEquals("Sept 29", ledger.getExpense(0).getDate());
         assertEquals("Rodgers Mobile", ledger.getExpense(0).getTitle());
@@ -59,9 +61,11 @@ public class LedgerTest {
     public void testChangeInBalance() {
         ledger.addIncome(4468.70,"Company XYZ");
         assertEquals(4468.70, ledger.getBalance());
+        assertEquals(4468.70, ledger.totalIncome());
 
         ledger.addExpense("Rodgers Mobile", 75.20, "Sept 29", "Mobile Bill");
         assertEquals(4393.50, ledger.getBalance());
+        assertEquals(75.20, ledger.totalExpenses());
 
         ledger.setBalance(3000);
         assertEquals(3000, ledger.getBalance());

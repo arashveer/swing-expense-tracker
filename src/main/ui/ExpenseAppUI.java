@@ -10,7 +10,6 @@ import persistence.JsonWriter;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.ColorUIResource;
-import javax.swing.plaf.FontUIResource;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.FileNotFoundException;
@@ -509,10 +508,9 @@ public class ExpenseAppUI extends JFrame {
         JButton addGoalBtn;
         JButton contributeBtn;
         JPanel goalsPanel;
-        JComboBox<Object> goalsList;
+        JComboBox<String> goalsList;
         JScrollPane scrollPane;
         GridBagConstraints constraints;
-
         int temp;
         String[] columnNames = {"Title", "Current Amount ($)", "Goal Amount ($)", "Status"};
         Object[][] goalsData;
@@ -560,7 +558,7 @@ public class ExpenseAppUI extends JFrame {
             contributeBtn = new JButton("Contribute");
             contributeBtn.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    contributeCombo();
+                    contributePopUp();
                 }
             });
             constraints.gridx = 2;
@@ -594,33 +592,35 @@ public class ExpenseAppUI extends JFrame {
         }
 
         private void contributeCombo() {
-            Object[] chooseGoalData = new Object[ledger.getGoals().size()];
+            String[] chooseGoalData = new String[ledger.getGoals().size()];
             for (int r = 0; r < ledger.getGoals().size(); r++) {
                 chooseGoalData[r] = ledger.getSavingGoal(r).getName();
             }
             goalsList = new JComboBox<>(chooseGoalData);
             goalsList.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    temp = goalsList.getSelectedIndex();
+                    JComboBox comboBox = (JComboBox) e.getSource();
+                    temp = comboBox.getSelectedIndex();
                 }
             });
-            contributePopUp(temp);
         }
 
-        private void contributePopUp(int index) {
+        private void contributePopUp() {
             JPanel panel = new JPanel(new GridLayout(0, 1));
             JTextField amount = new JTextField();
+            contributeCombo();
             panel.add(new JLabel("Goal"));
             panel.add(goalsList);
             panel.add(new JLabel("Contribution in ($)"));
             panel.add(amount);
+            System.out.println(temp);
             int result = JOptionPane.showConfirmDialog(null, panel, "Contribute to a Goal",
                     JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
             if (result == JOptionPane.OK_OPTION) {
                 if (amount.getText().isEmpty()) {
                     JOptionPane.showMessageDialog(null, "Contributing to goal failed, please try again.");
                 }
-                boolean success = ledger.addToSavingGoal(index, Double.parseDouble(amount.getText()));
+                boolean success = ledger.addToSavingGoal(temp, Double.parseDouble(amount.getText()));
                 if (!success) {
                     JOptionPane.showMessageDialog(null, "Failed to add contribution");
                     return;
@@ -716,36 +716,5 @@ public class ExpenseAppUI extends JFrame {
         expensesPanel.showExpenses();
         incomePanel.showIncomes();
         goalsPanel.showGoals();
-    }
-
-    private static void setFont(FontUIResource myFont) {
-        UIManager.put("Button.font", myFont);
-        UIManager.put("Label.font", myFont);
-        UIManager.put("List.font", myFont);
-        UIManager.put("RadioButtonMenuItem.acceleratorFont", myFont);
-        UIManager.put("RadioButtonMenuItem.font", myFont);
-        UIManager.put("CheckBoxMenuItem.font", myFont);
-        UIManager.put("OptionPane.buttonFont", myFont);
-        UIManager.put("OptionPane.messageFont", myFont);
-        UIManager.put("OptionPane.font", myFont);
-        UIManager.put("Panel.font", myFont);
-        UIManager.put("TabbedPane.font", myFont);
-        UIManager.put("Table.font", myFont);
-        UIManager.put("TableHeader.font", myFont);
-        UIManager.put("TextField.font", myFont);
-        UIManager.put("TextArea.font", myFont);
-        UIManager.put("TextPane.font", myFont);
-        UIManager.put("TabbedPane.smallFont", myFont);
-        UIManager.put("TitledBorder.font", myFont);
-        UIManager.put("ToolBar.font", myFont);
-        UIManager.put("FormattedTextField.font", myFont);
-        UIManager.put("InternalFrame.optionDialogTitleFont", myFont);
-        UIManager.put("InternalFrame.paletteTitleFont", myFont);
-        UIManager.put("InternalFrame.titleFont", myFont);
-    }
-
-    public static void main(String[] args) {
-        setFont(new FontUIResource(new Font("Tahoma", Font.PLAIN, 16)));
-        new ExpenseAppUI();
     }
 }
