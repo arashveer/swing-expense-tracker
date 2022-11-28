@@ -84,7 +84,7 @@ public class JsonReader {
     private void addIncomeItem(Ledger ledger, JSONObject jsonObject) {
         double amount = jsonObject.getDouble("amount");
         String source = jsonObject.getString("source");
-        ledger.addIncome(amount, source);
+        ledger.addIncomeNoLog(amount, source);
     }
 
     // MODIFIES: ledger
@@ -94,7 +94,7 @@ public class JsonReader {
         double amount = jsonObject.getDouble("amount");
         String date = jsonObject.getString("date");
         String note = jsonObject.getString("note");
-        ledger.addExpense(title, amount, date, note);
+        ledger.addExpenseNoLog(title, amount, date, note);
     }
 
     // MODIFIES: ledger

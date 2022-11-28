@@ -34,6 +34,13 @@ public class Ledger {
      * EFFECTS: Adds an expense to expenses list
      */
     public void addExpense(String title, double amount, String date, String note) {
+        addExpenseNoLog(title, amount, date, note);
+
+        EventLog.getInstance().logEvent(new Event("Added an expense '" + title + "' of amount $"
+                                                  + amount + "."));
+    }
+
+    public void addExpenseNoLog(String title, double amount, String date, String note) {
         expenses.add(new Expense(title, amount, date, note));
         balance -= amount;
     }
@@ -44,6 +51,13 @@ public class Ledger {
      * EFFECTS: Add an income to income list
      */
     public void addIncome(double amount, String source) {
+        addIncomeNoLog(amount, source);
+
+        EventLog.getInstance().logEvent(new Event("Added an income '" + source + "' of amount $"
+                                                 + amount + "."));
+    }
+
+    public void addIncomeNoLog(double amount, String source) {
         incomeList.add(new Income(amount, source));
         balance += amount;
     }
@@ -55,6 +69,9 @@ public class Ledger {
      */
     public void setSavingGoal(String title, double goalAmount) {
         goals.add(new SavingGoal(title,goalAmount));
+
+        EventLog.getInstance().logEvent(new Event("Added a saving goal '" + title + "' of goal amount $"
+                                                 + goalAmount + "."));
     }
 
     /*
@@ -153,7 +170,47 @@ public class Ledger {
             return false;
         }
         balance -= amount;
+
+        EventLog.getInstance().logEvent(new Event("Contributed $" + amount
+                + " to " + getSavingGoal(index).getName() + "."));
         return true;
+    }
+
+    /*
+     *  Delete functions
+     */
+
+    // MODIFIES: incomesList (this)
+    // EFFECTS: deletes an income of given index from incomeList
+    public void removeIncome(int index) {
+        Income income = incomeList.get(index);
+        incomeList.remove(index);
+        balance = balance - income.getAmount();
+
+        EventLog.getInstance().logEvent(new Event("Deleted income '" + income.getSource()
+                + "' of amount $" + income.getAmount() + "."));
+    }
+
+    // MODIFIES: expenses (this)
+    // EFFECTS: deletes an expense of given index from expenses
+    public void removeExpense(int index) {
+        Expense expense = expenses.get(index);
+        expenses.remove(index);
+        balance = balance + expense.getAmount();
+
+        EventLog.getInstance().logEvent(new Event("Deleted income '" + expense.getTitle()
+                + "' of amount $" + expense.getAmount() + "."));
+    }
+
+    // MODIFIES: goals (this)
+    // EFFECTS: deletes a saving goal of given index from goals
+    public void removeSavingGoal(int index) {
+        SavingGoal goal = goals.get(index);
+        goals.remove(index);
+        balance = balance + goal.getCurrentAmount();
+
+        EventLog.getInstance().logEvent(new Event("Deleted saving goal '" + goal.getName()
+                + "' ($" + goal.getCurrentAmount() + " out of $" + goal.getGoalAmount() + ")."));
     }
 
     // JSON Writer functions

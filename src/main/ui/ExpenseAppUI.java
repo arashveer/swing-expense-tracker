@@ -5,18 +5,22 @@
 
 package ui;
 
-import model.Expense;
-import model.Income;
-import model.Ledger;
-import model.SavingGoal;
+import model.*;
+import model.Event;
+import model.EventLog;
 import persistence.JsonReader;
 import persistence.JsonWriter;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.plaf.ColorUIResource;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
@@ -53,7 +57,15 @@ public class ExpenseAppUI extends JFrame {
         repaint();
 
         setLocationRelativeTo(null);  // centers the frame
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        this.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                printLog(EventLog.getInstance());
+                //Then exit the program
+                System.exit(0);
+            }
+        });
         setVisible(true);
         setResizable(false);
         getData();
@@ -129,14 +141,13 @@ public class ExpenseAppUI extends JFrame {
         exit.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 int confirmExit = JOptionPane.showConfirmDialog(null,
-                        "Do you want to save your file before quitting the app?",
-                        "Save before exit",
-                        JOptionPane.YES_NO_CANCEL_OPTION);
+                        "Press Yes to exit the application",
+                        "Confirm to exit",
+                        JOptionPane.YES_NO_OPTION);
 
                 if (confirmExit == JOptionPane.YES_OPTION) {
                     jsonWrite();
-                }
-                if (confirmExit == JOptionPane.NO_OPTION) {
+                    printLog(EventLog.getInstance());
                     System.exit(0);
                 }
             }
@@ -188,6 +199,8 @@ public class ExpenseAppUI extends JFrame {
                                     + String.format("%,.2f",ledger.getBalance())
                             + " from " + JSON_STORE);
                     update();
+                    printLog(EventLog.getInstance());
+
                 } catch (IOException e) {
                     JOptionPane.showMessageDialog(null,"Unable to read from file: " + JSON_STORE);
                 }
@@ -311,11 +324,13 @@ public class ExpenseAppUI extends JFrame {
     public class IncomePanel extends JPanel {
         JLabel welcome;
         JButton addIncomeBtn;
+        JButton removeIncomeBtn;
         JPanel incomesPanel;
         JScrollPane scrollPane;
         GridBagConstraints constraints;
         String[] columnNames = {"Source", "Amount ($)"};
         Object[][] incomesData;
+        int rowNum = -1;
 
         /* EFFECTS: constructs this income panel then creates and add components to it
          * uses GridBagLayout to have this layout work as grids and set the layout using GridBagConstraints
@@ -329,6 +344,7 @@ public class ExpenseAppUI extends JFrame {
             setBorder(new EmptyBorder(5, 15, 10, 10));
             welcomeLabel();
             addIncomeButton();
+            removeIncomeButton();
             showIncomes();
         }
 
@@ -346,7 +362,7 @@ public class ExpenseAppUI extends JFrame {
 
         // EFFECTS: create add income button with a listener for when its clicked
         private void addIncomeButton() {
-            addIncomeBtn = new JButton("Add an Income");
+            addIncomeBtn = new JButton("Add");
             addIncomeBtn.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     addIncomePopUp();
@@ -387,6 +403,47 @@ public class ExpenseAppUI extends JFrame {
             }
         }
 
+        // EFFECTS: create remove income button with a listener for when its clicked
+        private void removeIncomeButton() {
+            removeIncomeBtn = new JButton("Remove");
+            removeIncomeBtn.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    removeIncomePopUp();
+                }
+            });
+            constraints.gridx = 3;
+            constraints.gridy = 0;
+            constraints.weightx = 0;
+            constraints.weighty = 0;
+
+            this.add(removeIncomeBtn, constraints);
+        }
+
+        /* MODIFIES: incomes list in ledger
+         * EFFECTS: remove income button which clicked calls this function
+         * creates a popup window using JOptionPane to ask for confirmation
+         * for removal of an income object
+         * after deletion, writes it to the json file
+         */
+        private void removeIncomePopUp() {
+            if (rowNum == -1) {
+                JFrame f = new JFrame();
+                JOptionPane.showMessageDialog(f,"Choose an item in the list!","Alert",
+                        JOptionPane.WARNING_MESSAGE);
+            }
+
+            int confirmDelete = JOptionPane.showConfirmDialog(null,
+                    "Confirm removal of " + ledger.getIncome(rowNum).getSource() + ": $"
+                    + String.format("%,.2f", ledger.getIncome(rowNum).getAmount()),
+                    "Remove Income",
+                    JOptionPane.YES_NO_OPTION);
+            if (confirmDelete == JOptionPane.YES_OPTION) {
+                ledger.removeIncome(rowNum);
+                jsonWriteNoMsg();
+                JOptionPane.showMessageDialog(null, "Income removed successfully!");
+            }
+        }
+
         // EFFECTS: if there are incomes in ledger, creates a 2D array of incomes and displays it as a table
         private void showIncomes() {
             if (scrollPane.getParent() == incomesPanel) {
@@ -395,21 +452,33 @@ public class ExpenseAppUI extends JFrame {
             if (ledger.getIncomeList().size() != 0) {
                 incomesData = new Object[ledger.getIncomeList().size()][2];
                 addIncomesToTable(incomesData);
-                JTable table = new JTable(incomesData, columnNames);
-                table.setDefaultEditor(Object.class, null);
-                table.setRowHeight(30);
-                scrollPane = new JScrollPane(table);
-                table.setFillsViewportHeight(true);
+                createTable();
                 incomesPanel.add(scrollPane);
                 incomesPanel.revalidate();
                 incomesPanel.repaint();
-                constraints.gridwidth = 3;
+                constraints.gridwidth = 4;
                 constraints.gridx = 0;
                 constraints.gridy = 1;
                 constraints.weighty = 1;
                 constraints.weightx = 1;
             }
             this.add(incomesPanel, constraints);
+        }
+
+        // EFFECTS: creates new table with a listener to get selected item index
+        private void createTable() {
+            JTable table = new JTable(incomesData, columnNames);
+            table.setDefaultEditor(Object.class, null);
+            table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+            table.setRowHeight(30);
+            table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+                @Override
+                public void valueChanged(ListSelectionEvent e) {
+                    rowNum = table.getSelectedRow();
+                }
+            });
+            table.setFillsViewportHeight(true);
+            scrollPane = new JScrollPane(table);
         }
 
         // MODIFIES: incomesData
@@ -429,11 +498,13 @@ public class ExpenseAppUI extends JFrame {
     public class ExpensesPanel extends JPanel {
         JLabel welcome;
         JButton addExpenseBtn;
+        JButton removeExpenseBtn;
         JPanel expensesPanel;
         GridBagConstraints constraints;
         JScrollPane scrollPane;
         String[] columnNames = {"Title", "Amount ($)", "Date", "Notes"};
         Object[][] expensesData;
+        int rowNum = -1;
 
         /* EFFECTS: constructs this expenses panel then creates and add components to it
          * uses GridBagLayout to have this layout work as grids and set the layout using GridBagConstraints
@@ -447,6 +518,7 @@ public class ExpenseAppUI extends JFrame {
             setBorder(new EmptyBorder(5, 15, 10, 10));
             welcomeLabel();
             addExpenseButton();
+            removeExpenseButton();
             showExpenses();
         }
 
@@ -464,7 +536,7 @@ public class ExpenseAppUI extends JFrame {
 
         // EFFECTS: create add expense button with a listener for when its clicked
         private void addExpenseButton() {
-            addExpenseBtn = new JButton("Add an Expense");
+            addExpenseBtn = new JButton("Add");
             addExpenseBtn.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     addExpensePopUp();
@@ -509,6 +581,41 @@ public class ExpenseAppUI extends JFrame {
             }
         }
 
+        // EFFECTS: create remove expense button with a listener for when its clicked
+        private void removeExpenseButton() {
+            removeExpenseBtn = new JButton("Remove");
+            removeExpenseBtn.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    removeExpensePopUp();
+                }
+            });
+            constraints.gridx = 3;
+            constraints.gridy = 0;
+            constraints.weightx = 0;
+            constraints.weighty = 0;
+
+            this.add(removeExpenseBtn, constraints);
+        }
+
+        private void removeExpensePopUp() {
+            if (rowNum == -1) {
+                JFrame f = new JFrame();
+                JOptionPane.showMessageDialog(f,"Choose an item in the list!","Alert",
+                        JOptionPane.WARNING_MESSAGE);
+            }
+
+            int confirmDelete = JOptionPane.showConfirmDialog(null,
+                    "Confirm removal of " + ledger.getExpense(rowNum).getTitle() + ": $"
+                            + String.format("%,.2f", ledger.getExpense(rowNum).getAmount()),
+                    "Remove Expense",
+                    JOptionPane.YES_NO_OPTION);
+            if (confirmDelete == JOptionPane.YES_OPTION) {
+                ledger.removeExpense(rowNum);
+                jsonWriteNoMsg();
+                JOptionPane.showMessageDialog(null, "Expense removed successfully!");
+            }
+        }
+
         // EFFECTS: if there are expenses in ledger, creates a 2D array of expenses and displays it as a table
         private void showExpenses() {
             if (scrollPane.getParent() == expensesPanel) {
@@ -517,21 +624,31 @@ public class ExpenseAppUI extends JFrame {
             if (ledger.getExpenses().size() != 0) {
                 expensesData = new Object[ledger.getExpenses().size()][4];
                 addExpensesToTable(expensesData);
-                JTable table = new JTable(expensesData, columnNames);
-                table.setDefaultEditor(Object.class, null);
-                table.setRowHeight(30);
-                scrollPane = new JScrollPane(table);
-                table.setFillsViewportHeight(true);
-                expensesPanel.add(scrollPane);
+                createTable();
                 expensesPanel.revalidate();
                 expensesPanel.repaint();
-                constraints.gridwidth = 3;
+                constraints.gridwidth = 4;
                 constraints.gridx = 0;
                 constraints.gridy = 1;
                 constraints.weighty = 1;
                 constraints.weightx = 1;
             }
             this.add(expensesPanel, constraints);
+        }
+
+        private void createTable() {
+            JTable table = new JTable(expensesData, columnNames);
+            table.setDefaultEditor(Object.class, null);
+            table.setRowHeight(30);
+            scrollPane = new JScrollPane(table);
+            table.setFillsViewportHeight(true);
+            table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+                @Override
+                public void valueChanged(ListSelectionEvent e) {
+                    rowNum = table.getSelectedRow();
+                }
+            });
+            expensesPanel.add(scrollPane);
         }
 
         // MODIFIES: expensesData
@@ -555,6 +672,7 @@ public class ExpenseAppUI extends JFrame {
         JLabel welcome;
         JButton addGoalBtn;
         JButton contributeBtn;
+        JButton removeGoalBtn;
         JPanel goalsPanel;
         JComboBox<String> goalsList;
         JScrollPane scrollPane;
@@ -562,6 +680,7 @@ public class ExpenseAppUI extends JFrame {
         int temp; // value of selected item's index in contribute panel combobox
         String[] columnNames = {"Title", "Current Amount ($)", "Goal Amount ($)", "Status"};
         Object[][] goalsData;
+        int rowNum = -1;
 
         /* EFFECTS: constructs this goals panel then creates and add components to it
          * uses GridBagLayout to have this layout work as grids and set the layout using GridBagConstraints
@@ -576,6 +695,7 @@ public class ExpenseAppUI extends JFrame {
             welcomeLabel();
             addGoalButton();
             contributeButton();
+            removeGoalButton();
             showGoals();
         }
 
@@ -593,7 +713,7 @@ public class ExpenseAppUI extends JFrame {
 
         // EFFECTS: creates add saving goal button with a listener for when its clicked
         private void addGoalButton() {
-            addGoalBtn = new JButton("Add a Saving Goal");
+            addGoalBtn = new JButton("Create");
             addGoalBtn.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     addGoalPopUp();
@@ -699,6 +819,42 @@ public class ExpenseAppUI extends JFrame {
             });
         }
 
+        // EFFECTS: create remove saving goal button with a listener for when its clicked
+        private void removeGoalButton() {
+            removeGoalBtn = new JButton("Remove");
+            removeGoalBtn.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    removeGoalPopUp();
+                }
+            });
+            constraints.gridx = 4;
+            constraints.gridy = 0;
+            constraints.weightx = 0;
+            constraints.weighty = 0;
+
+            this.add(removeGoalBtn, constraints);
+        }
+
+        private void removeGoalPopUp() {
+            if (rowNum == -1) {
+                JFrame f = new JFrame();
+                JOptionPane.showMessageDialog(f,"Choose an item in the list!","Alert",
+                        JOptionPane.WARNING_MESSAGE);
+            }
+
+            int confirmDelete = JOptionPane.showConfirmDialog(null,
+                    "Confirm removal of " + ledger.getSavingGoal(rowNum).getName() + "\nContributed: $"
+                            + String.format("%,.2f", ledger.getSavingGoal(rowNum).getCurrentAmount())
+                            + " out of $" + String.format("%,.2f", ledger.getSavingGoal(rowNum).getGoalAmount()),
+                    "Remove Expense",
+                    JOptionPane.YES_NO_OPTION);
+            if (confirmDelete == JOptionPane.YES_OPTION) {
+                ledger.removeSavingGoal(rowNum);
+                jsonWriteNoMsg();
+                JOptionPane.showMessageDialog(null, "Saving goal removed successfully!");
+            }
+        }
+
         // EFFECTS: if there are goals in ledger, creates a 2D array of goals and displays it as a table
         private void showGoals() {
             if (scrollPane.getParent() == goalsPanel) {
@@ -707,21 +863,31 @@ public class ExpenseAppUI extends JFrame {
             if (ledger.getGoals().size() != 0) {
                 goalsData = new Object[ledger.getGoals().size()][4];
                 addGoalsToTable(goalsData);
-                JTable table = new JTable(goalsData, columnNames);
-                table.setDefaultEditor(Object.class, null);
-                table.setRowHeight(30);
-                scrollPane = new JScrollPane(table);
-                table.setFillsViewportHeight(true);
+                createTable();
                 goalsPanel.add(scrollPane);
                 goalsPanel.revalidate();
                 goalsPanel.repaint();
-                constraints.gridwidth = 3;
+                constraints.gridwidth = 5;
                 constraints.gridx = 0;
                 constraints.gridy = 1;
                 constraints.weighty = 1;
                 constraints.weightx = 1;
             }
             this.add(goalsPanel, constraints);
+        }
+
+        private void createTable() {
+            JTable table = new JTable(goalsData, columnNames);
+            table.setDefaultEditor(Object.class, null);
+            table.setFillsViewportHeight(true);
+            table.setRowHeight(30);
+            table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+                @Override
+                public void valueChanged(ListSelectionEvent e) {
+                    rowNum = table.getSelectedRow();
+                }
+            });
+            scrollPane = new JScrollPane(table);
         }
 
         // MODIFIES: goalsData
@@ -775,6 +941,14 @@ public class ExpenseAppUI extends JFrame {
             update();
         } catch (IOException e) {
             JOptionPane.showMessageDialog(null,"Unable to read from file: " + JSON_STORE);
+        }
+    }
+
+    // EFFECTS: prints out the log for this run of application
+    public void printLog(EventLog el) {
+        System.out.println("\n");
+        for (Event next : el) {
+            System.out.println(next.toString() + "\n");
         }
     }
 

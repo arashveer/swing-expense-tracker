@@ -1,14 +1,10 @@
 {
-    "balance": 41920.020000000004,
+    "balance": 54646.43000000002,
     "data": [
         {"incomes": [
             {
                 "amount": 1050,
                 "source": "Google Inc."
-            },
-            {
-                "amount": 4233.99,
-                "source": "BestBuy Ca"
             },
             {
                 "amount": 20000,
@@ -21,15 +17,13 @@
             {
                 "amount": 5000,
                 "source": "Birthday Gift"
+            },
+            {
+                "amount": 1200.89,
+                "source": "trial"
             }
         ]},
         {"expenses": [
-            {
-                "date": "22 Oct, 2022",
-                "note": "Food Delivery",
-                "amount": 50,
-                "title": "Uber Eats"
-            },
             {
                 "date": "20 Oct, 2022",
                 "note": "Phone Bill",
@@ -43,12 +37,6 @@
                 "title": "Save on Food"
             },
             {
-                "date": "28 Oct, 2022",
-                "note": "School",
-                "amount": 230.22,
-                "title": "ubc"
-            },
-            {
                 "date": "23 Nov, 2022",
                 "note": "Down Payment",
                 "amount": 55000,
@@ -59,21 +47,9 @@
                 "note": "New clothes",
                 "amount": 130.23,
                 "title": "Uniqlo"
-            },
-            {
-                "date": "10 Oct, 2022",
-                "note": "Food",
-                "amount": 29.29,
-                "title": "McDonalds"
             }
         ]},
         {"goals": [
-            {
-                "goalAmount": 15000,
-                "name": "Buy a new car",
-                "currentAmount": 15000,
-                "complete": true
-            },
             {
                 "goalAmount": 1200,
                 "name": "Save for a desktop",
@@ -89,7 +65,7 @@
             {
                 "goalAmount": 3000,
                 "name": "Car parts",
-                "currentAmount": 1500,
+                "currentAmount": 1050,
                 "complete": false
             }
         ]}
