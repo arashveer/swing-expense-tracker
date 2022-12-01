@@ -22,27 +22,53 @@ to make budgeting easier.
 - As a user, I want to set up saving goals.
 - As a user, I want to save my ledger data to a file.
 - As a user, I want to load my ledger data from a file. 
-- As a user, when I start the app, I want to be given the option to load my data.
-- As a user, when I close the app, I want to be given the option to save my data.
-- 
+- As a user, I want to delete any income, expense or saving goal.
+- As a user, I want to be given the option to load my data.
+- As a user, when I close the app, I want to save my data.
 
-# Instructions for Grader
+### Instructions for Grader
 
-- You can generate the first required event related to adding expense to a expenses by clicking on Expenses tab.
-  Once on expenses panel, click on "Add an Expense" button which will show a popup window.
+- You can generate the first required event related to adding expense to an expenses by clicking on Expenses tab.
+  Once on expenses panel, click on "Add" button which will show a popup window.
   Type your info in this popup and click Yes. Now, your expense will be shown in expenses list.
-- You can generate the second required event related to adding income to a income list by clicking on Incomes tab.
-  Once on incomes panel, click on "Add an Income" button which will show a popup window.
+  You can also choose to "Delete" an expense after clicking on an expense in the list and then confirming in the popup window.
+- You can generate the second required event related to adding income to an income list by clicking on Incomes tab.
+  Once on incomes panel, click on "Add" button which will show a popup window.
   Type your info in this popup and click Yes. Now, your income will be shown in incomes list.
+  You can also choose to "Delete" an income after clicking on an income in the list and then confirming in the popup window.
 - You can generate the third event related to adding saving goal to a goals by clicking on Saving Goals tab.
-  Once on saving goals panel, click on "Add a Saving Goal" button which will show a popup window.
+  Once on saving goals panel, click on "Add" button which will show a popup window.
   Type your info in this popup and click Yes. Now, your saving goal will be shown in saving goals list.
   Now, in the same tab, click on "Contribute" button next to "Add a Saving Goal" button.
   This will bring up another popup window, where you can choose a goal from combobox.
   Type in the amount to contribute to that goal and click OK.
   Now your saving goal will have its current amount increased by the contribution amount.
+  You can also choose to "Delete" a saving goal after clicking on a goal in the list and then confirming in the popup window.
 - You can locate my visual component by clicking on the dashboard tab.
   It is a logo of this application at top of the dashboard. I created this logo using an online tool called Figma.
 - You can save the state of my application by clicking on "Save" in File menu.
   Your data is also synced after every creation of an object.
 - You can reload the state of my application by clicking on "Sync" in File menu.
+
+### Phase 4: Task 2
+
+- Wed Nov 30 20:02:46 PST 2022  
+Added an expense 'BestBuy' of amount $24.50
+
+- Wed Nov 30 20:03:09 PST 2022  
+Added an income 'ICBC' of amount $2,534.10
+
+- Wed Nov 30 20:04:10 PST 2022    
+Added a saving goal 'TV' of goal amount $800.00
+
+- Wed Nov 30 20:04:38 PST 2022  
+Contributed $450.00 to 'TV'.
+
+- Wed Nov 30 20:04:48 PST 2022  
+Deleted saving goal 'Save for a desktop' ($1,200.00 out of $1,200.00)
+
+- Wed Nov 30 20:05:04 PST 2022  
+Deleted expense 'Save on Food' of amount $124.23
+
+- Wed Nov 30 20:05:20 PST 2022  
+Deleted income 'Birthday Gift' of amount $5,000.00

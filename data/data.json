@@ -1,5 +1,5 @@
 {
-    "balance": 54646.43000000002,
+    "balance": 53030.26000000001,
     "data": [
         {"incomes": [
             {
@@ -15,12 +15,12 @@
                 "source": "Income"
             },
             {
-                "amount": 5000,
-                "source": "Birthday Gift"
-            },
-            {
                 "amount": 1200.89,
                 "source": "trial"
+            },
+            {
+                "amount": 2534.1,
+                "source": "ICBC"
             }
         ]},
         {"expenses": [
@@ -29,12 +29,6 @@
                 "note": "Phone Bill",
                 "amount": 100,
                 "title": "Bell Mobile"
-            },
-            {
-                "date": "22 Oct, 2022",
-                "note": "Grocery Bill",
-                "amount": 124.23,
-                "title": "Save on Food"
             },
             {
                 "date": "23 Nov, 2022",
@@ -47,15 +41,15 @@
                 "note": "New clothes",
                 "amount": 130.23,
                 "title": "Uniqlo"
+            },
+            {
+                "date": "30 Nov, 2022",
+                "note": "Charging Cable",
+                "amount": 24.5,
+                "title": "BestBuy"
             }
         ]},
         {"goals": [
-            {
-                "goalAmount": 1200,
-                "name": "Save for a desktop",
-                "currentAmount": 1200,
-                "complete": true
-            },
             {
                 "goalAmount": 50000,
                 "name": "House",
@@ -66,6 +60,12 @@
                 "goalAmount": 3000,
                 "name": "Car parts",
                 "currentAmount": 1050,
+                "complete": false
+            },
+            {
+                "goalAmount": 800,
+                "name": "TV",
+                "currentAmount": 450,
                 "complete": false
             }
         ]}
