@@ -86,7 +86,7 @@ public class LedgerTest {
     }
 
     @Test
-    public void testAddToSavingGoalWhenWhenAmountisNeg() {
+    public void testAddToSavingGoalWhenWhenAmountIsNeg() {
         ledger.setSavingGoal("Get a new car", 14800.99);
         assertFalse(ledger.addToSavingGoal(0,-1000.00));
     }
@@ -144,5 +144,47 @@ public class LedgerTest {
         assertEquals(15000.00, goal.getDouble("goalAmount"));
         assertEquals(2500.00, goal.getDouble("currentAmount"));
         assertFalse(goal.getBoolean("complete"));
+    }
+
+    @Test
+    public void testRemoveIncome() {
+        ledger.addIncome(4468.70,"Company XYZ");
+        ledger.addIncome(4168.71,"Company ABC");
+        assertEquals(2, ledger.getIncomeList().size());
+        assertEquals(8637.41, ledger.getBalance());
+
+        ledger.removeIncome(0);
+
+        assertEquals(1, ledger.getIncomeList().size());
+        assertEquals("Company ABC", ledger.getIncome(0).getSource());
+        assertEquals(4168.71, ledger.getBalance());
+
+    }
+
+    @Test
+    public void testRemoveExpense() {
+        ledger.addExpense("Mobile 1", 75.60, "Sept 29", "Mobile Bill");
+        ledger.addExpense("Mobile 2", 85.60, "Sept 28", "Mobile Bill2");
+        assertEquals(2, ledger.getExpenses().size());
+
+        ledger.removeExpense(0);
+
+        assertEquals(1, ledger.getExpenses().size());
+        assertEquals("Mobile 2", ledger.getExpense(0).getTitle());
+
+    }
+
+    @Test
+    public void testRemoveSavingGoal() {
+        ledger.setOldSavingGoal("Get a new car", 15000,2500, false);
+        ledger.setOldSavingGoal("Get a new car 2", 10000,500, false);
+        assertEquals(2, ledger.getGoals().size());
+        assertEquals(-3000, ledger.getBalance());
+
+        ledger.removeSavingGoal(0);
+
+        assertEquals(1, ledger.getGoals().size());
+        assertEquals(500, ledger.getSavingGoal(0).getCurrentAmount());
+
     }
 }

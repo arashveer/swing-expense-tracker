@@ -37,7 +37,7 @@ public class Ledger {
         addExpenseNoLog(title, amount, date, note);
 
         EventLog.getInstance().logEvent(new Event("Added an expense '" + title + "' of amount $"
-                                                  + amount + "."));
+                                                  + String.format("%,.2f",amount)));
     }
 
     public void addExpenseNoLog(String title, double amount, String date, String note) {
@@ -54,7 +54,7 @@ public class Ledger {
         addIncomeNoLog(amount, source);
 
         EventLog.getInstance().logEvent(new Event("Added an income '" + source + "' of amount $"
-                                                 + amount + "."));
+                                                 + String.format("%,.2f", amount)));
     }
 
     public void addIncomeNoLog(double amount, String source) {
@@ -71,7 +71,7 @@ public class Ledger {
         goals.add(new SavingGoal(title,goalAmount));
 
         EventLog.getInstance().logEvent(new Event("Added a saving goal '" + title + "' of goal amount $"
-                                                 + goalAmount + "."));
+                                                 + String.format("%,.2f",goalAmount)));
     }
 
     /*
@@ -171,8 +171,8 @@ public class Ledger {
         }
         balance -= amount;
 
-        EventLog.getInstance().logEvent(new Event("Contributed $" + amount
-                + " to " + getSavingGoal(index).getName() + "."));
+        EventLog.getInstance().logEvent(new Event("Contributed $" + String.format("%,.2f",amount)
+                + " to '" + getSavingGoal(index).getName() + "'."));
         return true;
     }
 
@@ -188,7 +188,7 @@ public class Ledger {
         balance = balance - income.getAmount();
 
         EventLog.getInstance().logEvent(new Event("Deleted income '" + income.getSource()
-                + "' of amount $" + income.getAmount() + "."));
+                + "' of amount $" + String.format("%,.2f",income.getAmount())));
     }
 
     // MODIFIES: expenses (this)
@@ -198,8 +198,8 @@ public class Ledger {
         expenses.remove(index);
         balance = balance + expense.getAmount();
 
-        EventLog.getInstance().logEvent(new Event("Deleted income '" + expense.getTitle()
-                + "' of amount $" + expense.getAmount() + "."));
+        EventLog.getInstance().logEvent(new Event("Deleted expense '" + expense.getTitle()
+                + "' of amount $" + String.format("%,.2f",expense.getAmount())));
     }
 
     // MODIFIES: goals (this)
@@ -210,7 +210,8 @@ public class Ledger {
         balance = balance + goal.getCurrentAmount();
 
         EventLog.getInstance().logEvent(new Event("Deleted saving goal '" + goal.getName()
-                + "' ($" + goal.getCurrentAmount() + " out of $" + goal.getGoalAmount() + ")."));
+                + "' ($" + String.format("%,.2f",goal.getCurrentAmount())
+                + " out of $" + String.format("%,.2f",goal.getGoalAmount()) + ")"));
     }
 
     // JSON Writer functions
