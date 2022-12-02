@@ -72,3 +72,14 @@ Deleted expense 'Save on Food' of amount $124.23
 
 - Wed Nov 30 20:05:20 PST 2022  
 Deleted income 'Birthday Gift' of amount $5,000.00
+
+### Phase 4: Task 3
+
+- I would have liked to extract private nested classes such as Dashboard, ExpensesPanel, IncomePanel and GoalsPanel
+from ExpenseAppUI into a panels package inside ui package. This would result in clear distinction between these panels
+and also make them easier to debug. 
+- Further, for the panels package, I would have created an abstract panel to make it easier and faster to work on the
+various panel classes.
+- I would have liked to implement Single Responsibility Principle to Ledger class in model. It could be possible
+to split the Ledger class into three classes to handle incomes list, expenses list and saving goals list in order to
+increase cohesion. This could also help to reduce the coupling between the classes in model package.

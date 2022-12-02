@@ -1,5 +1,5 @@
 {
-    "balance": 53030.26000000001,
+    "balance": 52979.81000000001,
     "data": [
         {"incomes": [
             {
@@ -47,6 +47,12 @@
                 "note": "Charging Cable",
                 "amount": 24.5,
                 "title": "BestBuy"
+            },
+            {
+                "date": "1 Dec, 2022",
+                "note": "Admission fee",
+                "amount": 50.45,
+                "title": "Museum"
             }
         ]},
         {"goals": [

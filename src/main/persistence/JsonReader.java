@@ -16,6 +16,7 @@ import java.util.stream.Stream;
 // Represents a reader that reads ledger from JSON data stored in file
 public class JsonReader {
     String source;
+    Ledger ledger;
 
     // EFFECTS: constructs a Json reader object with source of the json file
     public JsonReader(String source) {
@@ -45,7 +46,7 @@ public class JsonReader {
      *      do not need to parse balance from json, addItem calls in parseData increments the balance
      */
     private Ledger parseLedger(JSONObject jsonObject) {
-        Ledger ledger = new Ledger();
+        ledger = new Ledger();
         parseData(ledger, jsonObject);
         return ledger;
     }

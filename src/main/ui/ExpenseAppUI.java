@@ -35,7 +35,7 @@ public class ExpenseAppUI extends JFrame {
     private JTabbedPane tabs;
     private JMenuBar menuBar;
     private JLabel balance;
-    Ledger ledger; // object
+    private Ledger ledger; // object
     private JsonWriter jsonWriter;
     private JsonReader jsonReader;
     private static final String JSON_STORE = "./data/data.json";
@@ -235,7 +235,7 @@ public class ExpenseAppUI extends JFrame {
     /*
      * Dashboard panel in the tabs JTabbedPane
      */
-    public class Dashboard extends JPanel {
+    private class Dashboard extends JPanel {
         JLabel welcome;
         JLabel info;
         JLabel goalInfo;
@@ -321,7 +321,7 @@ public class ExpenseAppUI extends JFrame {
     /*
      * Income panel in the tabs JTabbedPane
      */
-    public class IncomePanel extends JPanel {
+    private class IncomePanel extends JPanel {
         JLabel welcome;
         JButton addIncomeBtn;
         JButton removeIncomeBtn;
@@ -495,7 +495,7 @@ public class ExpenseAppUI extends JFrame {
     /*
      * Expenses panel in the tabs JTabbedPane
      */
-    public class ExpensesPanel extends JPanel {
+    private class ExpensesPanel extends JPanel {
         JLabel welcome;
         JButton addExpenseBtn;
         JButton removeExpenseBtn;
@@ -668,7 +668,7 @@ public class ExpenseAppUI extends JFrame {
     /*
      * Saving Goals panel in the tabs JTabbedPane
      */
-    public class GoalsPanel extends JPanel {
+    private class GoalsPanel extends JPanel {
         JLabel welcome;
         JButton addGoalBtn;
         JButton contributeBtn;
