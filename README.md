@@ -48,7 +48,7 @@ to make budgeting easier.
   It is a logo of this application at top of the dashboard. I created this logo using an online tool called Figma.
 - You can save the state of my application by clicking on "Save" in File menu.
   Your data is also synced after every creation of an object.
-- You can reload the state of my application by clicking on "Sync" in File menu.
+- You can reload the state of my application by clicking on "Load" in File menu.
 
 ### Phase 4: Task 2
 
