@@ -160,7 +160,7 @@ public class ExpenseAppUI extends JFrame {
     private class NewFileAction extends AbstractAction {
 
         NewFileAction() {
-            super("Reset");
+            super("New");
         }
 
         @Override
@@ -182,7 +182,7 @@ public class ExpenseAppUI extends JFrame {
     private class LoadFileAction extends AbstractAction {
 
         LoadFileAction() {
-            super("Sync");
+            super("Load");
         }
 
         @Override
