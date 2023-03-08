@@ -26,7 +26,7 @@ to make budgeting easier.
 - As a user, I want to be given the option to load my data.
 - As a user, when I close the app, I want to save my data.
 
-### Instructions for Grader
+### Instructions
 
 - You can generate the first required event related to adding expense to an expenses by clicking on Expenses tab.
   Once on expenses panel, click on "Add" button which will show a popup window.
